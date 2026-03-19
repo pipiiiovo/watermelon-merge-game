@@ -467,7 +467,7 @@ function drop(x){
   updatePreview();
   // fix: cancel any pending cooldown before setting a new one
   if(dropCooldownId!==null){ clearTimeout(dropCooldownId); dropCooldownId=null; }
-  dropCooldownId=setTimeout(()=>{ dropCooldownId=null; if(gameRunning)canDrop=true; },700);
+  dropCooldownId=setTimeout(()=>{ dropCooldownId=null; if(gameRunning)canDrop=true; },500);
 }
 
 // ─── Collision / Merge ───
@@ -483,8 +483,10 @@ function handleCollision(e){
     merging.add(a.id);merging.add(b.id);
     const mx=(a.position.x+b.position.x)/2;
     const my=(a.position.y+b.position.y)/2;
+    // Remove from world + maps, then clean merging set
     World.remove(world,a);World.remove(world,b);
     bodiesMap.delete(a.id);bodiesMap.delete(b.id);
+    merging.delete(a.id);merging.delete(b.id);
     const nb=spawnBody(li+1,mx,my);
     Body.setVelocity(nb,{x:0,y:-2.5});
     nb._flash=10;
@@ -540,7 +542,6 @@ function updatePreview(){
 // ─── Render loop ───
 function loop(){
   Engine.update(engine,1000/60);
-  merging.clear();
   if(gameRunning)checkGameOver();
 
   // Background
