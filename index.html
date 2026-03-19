@@ -196,43 +196,43 @@ input.name-input:focus{border-color:#ff9ff3;}
 // Spawn pool: only Lv1–5 (smallest), random from these
 // ═══════════════════════════════════════════════════
 const LEVELS = [
-  // Lv1–8 basic emotions (smallest)
-  {lv:1, emoji:'😊', name:'微笑竹君',    r:14,  color:'#FF9AA2'},
-  {lv:2, emoji:'😲', name:'惊讶竹君',    r:18,  color:'#FFB7B2'},
-  {lv:3, emoji:'😕', name:'困惑竹君',    r:22,  color:'#FFDAC1'},
-  {lv:4, emoji:'😂', name:'大笑竹君',    r:27,  color:'#E2F0CB'},
-  {lv:5, emoji:'😭', name:'痛哭竹君',    r:32,  color:'#B5EAD7'},
-  {lv:6, emoji:'😡', name:'愤怒竹君',    r:37,  color:'#C7CEEA'},
-  {lv:7, emoji:'😴', name:'瞌睡竹君',    r:42,  color:'#DCC7F0'},
-  {lv:8, emoji:'😶', name:'发呆竹君',    r:47,  color:'#F0E6FF'},
+  // Lv1–8 basic emotions (smallest) — radii scaled up 1.5×
+  {lv:1, emoji:'😊', name:'微笑竹君',    r:21,  color:'#FF9AA2'},
+  {lv:2, emoji:'😲', name:'惊讶竹君',    r:27,  color:'#FFB7B2'},
+  {lv:3, emoji:'😕', name:'困惑竹君',    r:33,  color:'#FFDAC1'},
+  {lv:4, emoji:'😂', name:'大笑竹君',    r:40,  color:'#E2F0CB'},
+  {lv:5, emoji:'😭', name:'痛哭竹君',    r:48,  color:'#B5EAD7'},
+  {lv:6, emoji:'😡', name:'愤怒竹君',    r:56,  color:'#C7CEEA'},
+  {lv:7, emoji:'😴', name:'瞌睡竹君',    r:63,  color:'#DCC7F0'},
+  {lv:8, emoji:'😶', name:'发呆竹君',    r:70,  color:'#F0E6FF'},
   // Lv9–16 exaggerated
-  {lv:9, emoji:'🤢', name:'中毒竹君',    r:52,  color:'#9BF0A0'},
-  {lv:10,emoji:'🐸', name:'青蛙竹君',    r:57,  color:'#77DD77'},
-  {lv:11,emoji:'😇', name:'天使竹君',    r:62,  color:'#FFFDD0'},
-  {lv:12,emoji:'🐷', name:'肥胖竹君',    r:67,  color:'#FFB3DE'},
-  {lv:13,emoji:'💃', name:'纤细竹君',    r:72,  color:'#FF99CC'},
-  {lv:14,emoji:'💥', name:'爆炸头竹君',  r:77,  color:'#FFAA00'},
-  {lv:15,emoji:'💭', name:'冒泡竹君',    r:82,  color:'#AAE4FF'},
-  {lv:16,emoji:'🤩', name:'星眼竹君',    r:87,  color:'#FFD700'},
+  {lv:9, emoji:'🤢', name:'中毒竹君',    r:78,  color:'#9BF0A0'},
+  {lv:10,emoji:'🐸', name:'青蛙竹君',    r:86,  color:'#77DD77'},
+  {lv:11,emoji:'😇', name:'天使竹君',    r:93,  color:'#FFFDD0'},
+  {lv:12,emoji:'🐷', name:'肥胖竹君',    r:100, color:'#FFB3DE'},
+  {lv:13,emoji:'💃', name:'纤细竹君',    r:108, color:'#FF99CC'},
+  {lv:14,emoji:'💥', name:'爆炸头竹君',  r:116, color:'#FFAA00'},
+  {lv:15,emoji:'💭', name:'冒泡竹君',    r:123, color:'#AAE4FF'},
+  {lv:16,emoji:'🤩', name:'星眼竹君',    r:130, color:'#FFD700'},
   // Lv17–24 costumes
-  {lv:17,emoji:'👸', name:'公主竹君',    r:92,  color:'#FFB6C1'},
-  {lv:18,emoji:'🥷', name:'忍者竹君',    r:97,  color:'#666677'},
-  {lv:19,emoji:'🧙', name:'魔女竹君',    r:102, color:'#C39BD3'},
-  {lv:20,emoji:'🚀', name:'宇航竹君',    r:107, color:'#4FC3F7'},
-  {lv:21,emoji:'👨‍🍳',name:'厨师竹君',   r:112, color:'#FFFFFF'},
-  {lv:22,emoji:'🏃', name:'运动竹君',    r:117, color:'#FF6B35'},
-  {lv:23,emoji:'🕵️', name:'侦探竹君',    r:122, color:'#C8A96E'},
-  {lv:24,emoji:'🦸', name:'超人竹君',    r:127, color:'#5C8AE6'},
+  {lv:17,emoji:'👸', name:'公主竹君',    r:138, color:'#FFB6C1'},
+  {lv:18,emoji:'🥷', name:'忍者竹君',    r:146, color:'#666677'},
+  {lv:19,emoji:'🧙', name:'魔女竹君',    r:153, color:'#C39BD3'},
+  {lv:20,emoji:'🚀', name:'宇航竹君',    r:160, color:'#4FC3F7'},
+  {lv:21,emoji:'👨‍🍳',name:'厨师竹君',   r:168, color:'#FFFFFF'},
+  {lv:22,emoji:'🏃', name:'运动竹君',    r:176, color:'#FF6B35'},
+  {lv:23,emoji:'🕵️', name:'侦探竹君',    r:183, color:'#C8A96E'},
+  {lv:24,emoji:'🦸', name:'超人竹君',    r:190, color:'#5C8AE6'},
   // Lv25–31 supernatural
-  {lv:25,emoji:'🗿', name:'巨人竹君',    r:132, color:'#B0B0B0'},
-  {lv:26,emoji:'👻', name:'透明竹君',    r:137, color:'#CCCCFF'},
-  {lv:27,emoji:'✨', name:'发光竹君',    r:142, color:'#FFFF99'},
-  {lv:28,emoji:'👾', name:'像素竹君',    r:147, color:'#00FF41'},
-  {lv:29,emoji:'👴', name:'老奶奶竹君',  r:152, color:'#D3D3D3'},
-  {lv:30,emoji:'👶', name:'婴儿竹君',    r:157, color:'#FFD6A5'},
-  {lv:31,emoji:'💧', name:'融化竹君',    r:162, color:'#89CFF0'},
+  {lv:25,emoji:'🗿', name:'巨人竹君',    r:198, color:'#B0B0B0'},
+  {lv:26,emoji:'👻', name:'透明竹君',    r:206, color:'#CCCCFF'},
+  {lv:27,emoji:'✨', name:'发光竹君',    r:213, color:'#FFFF99'},
+  {lv:28,emoji:'👾', name:'像素竹君',    r:220, color:'#00FF41'},
+  {lv:29,emoji:'👴', name:'老奶奶竹君',  r:228, color:'#D3D3D3'},
+  {lv:30,emoji:'👶', name:'婴儿竹君',    r:236, color:'#FFD6A5'},
+  {lv:31,emoji:'💧', name:'融化竹君',    r:243, color:'#89CFF0'},
   // Lv32 ultimate (biggest)
-  {lv:32,emoji:'👑', name:'宇宙女神',    r:168, color:'#FFD700'},
+  {lv:32,emoji:'👑', name:'宇宙女神',    r:252, color:'#FFD700'},
 ];
 
 const SPAWN_POOL = [0,1,2,3,4]; // only lv index 0–4 (Lv1–5) can spawn
@@ -321,6 +321,20 @@ function updateParticles(){
 }
 
 // ═══════════════════════════════════════════════════
+// IMAGE PRELOAD
+// ═══════════════════════════════════════════════════
+const IMGS = new Array(32).fill(null);
+let imgsLoaded = 0;
+function preloadImages(cb){
+  LEVELS.forEach((lv,i)=>{
+    const img = new window.Image();
+    img.onload = ()=>{ IMGS[i]=img; imgsLoaded++; if(imgsLoaded===32&&cb)cb(); };
+    img.onerror = ()=>{ imgsLoaded++; if(imgsLoaded===32&&cb)cb(); };
+    img.src = `images/lv${String(i+1).padStart(2,'0')}.png`;
+  });
+}
+
+// ═══════════════════════════════════════════════════
 // DRAW HELPER
 // ═══════════════════════════════════════════════════
 function lighten(c,a){
@@ -339,20 +353,36 @@ function darken(c,a){
 }
 function drawItem(ctx,x,y,ld,alpha=1){
   const{r,color,emoji,lv}=ld;
+  const idx=lv-1;
   ctx.save();ctx.globalAlpha=alpha;
-  if(lv>=20){ctx.shadowBlur=18;ctx.shadowColor=color;}
-  const g=ctx.createRadialGradient(x-r*.3,y-r*.3,r*.05,x,y,r);
-  g.addColorStop(0,lighten(color,55));g.addColorStop(1,darken(color,25));
-  ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
-  ctx.strokeStyle='rgba(255,255,255,.28)';ctx.lineWidth=1.5;ctx.stroke();
-  ctx.shadowBlur=0;
-  const fs=Math.max(10,Math.floor(r*.85));
-  ctx.font=`${fs}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';
-  ctx.fillText(emoji,x,y);
-  if(r>35){
-    ctx.font=`bold ${Math.max(7,Math.floor(r*.26))}px sans-serif`;
-    ctx.fillStyle='rgba(255,255,255,.85)';
-    ctx.fillText(`Lv.${lv}`,x,y+r*.62);
+
+  const imgObj=IMGS[idx];
+  if(imgObj){
+    // Clip to circle
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.clip();
+    // Glow for high levels
+    if(lv>=20){ctx.shadowBlur=20;ctx.shadowColor=color;}
+    ctx.drawImage(imgObj,x-r,y-r,r*2,r*2);
+    ctx.shadowBlur=0;
+    // Ring border
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=2;ctx.stroke();
+  } else {
+    // Fallback: colored circle + emoji
+    if(lv>=20){ctx.shadowBlur=18;ctx.shadowColor=color;}
+    const g=ctx.createRadialGradient(x-r*.3,y-r*.3,r*.05,x,y,r);
+    g.addColorStop(0,lighten(color,55));g.addColorStop(1,darken(color,25));
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.28)';ctx.lineWidth=1.5;ctx.stroke();
+    ctx.shadowBlur=0;
+    const fs=Math.max(10,Math.floor(r*.85));
+    ctx.font=`${fs}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(emoji,x,y);
+    if(r>35){
+      ctx.font=`bold ${Math.max(7,Math.floor(r*.26))}px sans-serif`;
+      ctx.fillStyle='rgba(255,255,255,.85)';
+      ctx.fillText(`Lv.${lv}`,x,y+r*.62);
+    }
   }
   ctx.restore();
 }
@@ -362,10 +392,14 @@ function drawItem(ctx,x,y,ld,alpha=1){
 // ═══════════════════════════════════════════════════
 (function(){
   const grid=document.getElementById('level-grid');
-  LEVELS.forEach(lv=>{
-    const sz=Math.min(26,Math.max(11,lv.r*.2));
+  LEVELS.forEach((lv,i)=>{
+    const sz=Math.min(28,Math.max(12,lv.r*.2));
     const item=document.createElement('div');item.className='level-item';
-    item.innerHTML=`<div class="level-dot" style="width:${sz}px;height:${sz}px;background:${lv.color};font-size:${sz*.65}px">${lv.emoji}</div><div class="level-name">${lv.name.replace('竹君','').replace('宇宙','')}</div>`;
+    item.innerHTML=`<img src="images/lv${String(i+1).padStart(2,'0')}.png"
+      class="level-dot" style="width:${sz}px;height:${sz}px;border-radius:50%;object-fit:cover;"
+      onerror="this.outerHTML='<div class=level-dot style=width:${sz}px;height:${sz}px;background:${lv.color};font-size:${sz*.65}px>${lv.emoji}</div>'"
+      title="${lv.name}">
+    <div class="level-name">${lv.name.replace('竹君','').replace('宇宙','')}</div>`;
     grid.appendChild(item);
   });
 })();
@@ -382,6 +416,7 @@ let canDrop=true,gameRunning=false;
 let bodiesMap=new Map(),merging=new Set();
 let overflowTimer=null;
 let playerName='玩家';
+let dropCooldownId=null; // fix: track single active cooldown token
 
 const gameCanvas=document.getElementById('gameCanvas');
 const gCtx=gameCanvas.getContext('2d');
@@ -394,6 +429,7 @@ function initGame(){
   if(animId) cancelAnimationFrame(animId);
   particles=[];bodiesMap.clear();merging.clear();
   score=0;canDrop=true;gameRunning=true;dropX=GAME_W/2;
+  if(dropCooldownId!==null){clearTimeout(dropCooldownId);dropCooldownId=null;}
   document.getElementById('score').textContent='0';
 
   currentIdx=rndSpawn();nextIdx=rndSpawn();
@@ -432,7 +468,9 @@ function drop(x){
   spawnBody(li,x,DROP_Y);
   currentIdx=nextIdx;nextIdx=rndSpawn();
   updatePreview();
-  setTimeout(()=>{if(gameRunning)canDrop=true;},650);
+  // fix: cancel any pending cooldown before setting a new one
+  if(dropCooldownId!==null){ clearTimeout(dropCooldownId); dropCooldownId=null; }
+  dropCooldownId=setTimeout(()=>{ dropCooldownId=null; if(gameRunning)canDrop=true; },700);
 }
 
 // ─── Collision / Merge ───
@@ -583,6 +621,9 @@ gameCanvas.addEventListener('touchend',e=>{e.preventDefault();if(gameRunning)dro
 // ═══════════════════════════════════════════════════
 // BUTTONS
 // ═══════════════════════════════════════════════════
+// Preload images on page load
+preloadImages(()=>{ console.log('🖼️ All images loaded!'); });
+
 document.getElementById('start-btn').addEventListener('click',()=>{
   const raw=document.getElementById('name-input').value.trim();
   playerName=raw||'匿名玩家';
