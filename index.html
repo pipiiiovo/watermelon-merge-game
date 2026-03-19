@@ -405,15 +405,15 @@ function drawItem(ctx,x,y,ld,alpha=1){
 // GAME STATE
 // ═══════════════════════════════════════════════════
 const GAME_W=360,GAME_H=520,WALL_T=30,DROP_Y=40;
-const {Engine,World,Bodies,Events,Body}=Matter;
+const {Engine,World,Bodies,Events,Body,Composite}=Matter;
 
+// Game state: 'ready' | 'drop' | 'over'
+let gameState='over';
 let engine,world,animId;
 let score=0,currentIdx=0,nextIdx=0,dropX=GAME_W/2;
-let canDrop=true,gameRunning=false;
-let bodiesMap=new Map(),merging=new Set();
 let overflowTimer=null;
 let playerName='玩家';
-let dropCooldownId=null; // fix: track single active cooldown token
+let dropCooldownId=null;
 
 const gameCanvas=document.getElementById('gameCanvas');
 const gCtx=gameCanvas.getContext('2d');
@@ -422,11 +422,11 @@ function rndSpawn(){ return SPAWN_POOL[Math.floor(Math.random()*SPAWN_POOL.lengt
 
 // ─── Init ───
 function initGame(){
-  if(engine){World.clear(world);Engine.clear(engine);}
+  if(engine){Composite.clear(engine.world);Engine.clear(engine);}
   if(animId) cancelAnimationFrame(animId);
-  particles=[];bodiesMap.clear();merging.clear();pendingMerges.clear();
-  score=0;canDrop=true;gameRunning=true;dropX=GAME_W/2;
-  if(dropCooldownId!==null){clearTimeout(dropCooldownId);dropCooldownId=null;}
+  if(dropCooldownId){clearTimeout(dropCooldownId);dropCooldownId=null;}
+  particles=[];
+  score=0;gameState='ready';dropX=GAME_W/2;
   document.getElementById('score').textContent='0';
 
   currentIdx=rndSpawn();nextIdx=rndSpawn();
@@ -435,7 +435,7 @@ function initGame(){
   engine=Engine.create({gravity:{y:2}});
   world=engine.world;
   const wo={isStatic:true,friction:.5,restitution:.25,label:'wall'};
-  World.add(world,[
+  Composite.add(world,[
     Bodies.rectangle(GAME_W/2,GAME_H+WALL_T/2,GAME_W,WALL_T,wo),
     Bodies.rectangle(-WALL_T/2,GAME_H/2,WALL_T,GAME_H*2,wo),
     Bodies.rectangle(GAME_W+WALL_T/2,GAME_H/2,WALL_T,GAME_H*2,wo),
@@ -449,56 +449,45 @@ function spawnBody(lvIdx,x,y){
   const lv=LEVELS[lvIdx];
   const b=Bodies.circle(x,y,lv.r,{
     restitution:.28,friction:.55,frictionAir:.006,density:.002,
-    label:'item_'+lvIdx
+    label:'item'
   });
   b._lvIdx=lvIdx;
-  World.add(world,b);
-  bodiesMap.set(b.id,lvIdx);
+  b.popped=false;
+  Composite.add(world,b);
   return b;
 }
 
 // ─── Drop ───
 function drop(x){
-  if(!canDrop||!gameRunning)return;
-  canDrop=false;playDrop();
+  if(gameState!=='ready')return;
+  gameState='drop';
+  playDrop();
   const li=currentIdx;
   spawnBody(li,x,DROP_Y);
   currentIdx=nextIdx;nextIdx=rndSpawn();
   updatePreview();
-  // fix: cancel any pending cooldown before setting a new one
-  if(dropCooldownId!==null){ clearTimeout(dropCooldownId); dropCooldownId=null; }
-  dropCooldownId=setTimeout(()=>{ dropCooldownId=null; if(gameRunning)canDrop=true; },500);
+  dropCooldownId=setTimeout(()=>{
+    dropCooldownId=null;
+    if(gameState==='drop') gameState='ready';
+  },500);
 }
 
-// ─── Collision / Merge ───
-const pendingMerges = new Map(); // bodyId -> merge info
+// ─── Collision / Merge ── (直接参考 moonfloof/suika-game 写法)
 function handleCollision(e){
   for(const pair of e.pairs){
     const a=pair.bodyA,b=pair.bodyB;
-    if(a.label==='wall'||b.label==='wall')continue;
+    if(a.isStatic||b.isStatic)continue;
     if(a._lvIdx===undefined||b._lvIdx===undefined)continue;
+    if(a.popped||b.popped)continue;
     if(a._lvIdx!==b._lvIdx)continue;
     const li=a._lvIdx;
     if(li>=LEVELS.length-1)continue;
-    // Skip if either body already scheduled for merge
-    if(pendingMerges.has(a.id)||pendingMerges.has(b.id))continue;
+    // Mark as popped first, then remove + spawn
+    a.popped=true; b.popped=true;
     const mx=(a.position.x+b.position.x)/2;
     const my=(a.position.y+b.position.y)/2;
-    pendingMerges.set(a.id,{a,b,li,mx,my});
-    pendingMerges.set(b.id,{ref:a.id}); // mark b as part of this merge
-  }
-}
-function processMerges(){
-  const processed = new Set();
-  for(const [id, info] of pendingMerges){
-    if(info.ref!==undefined){ continue; } // skip secondary entries
-    if(processed.has(id))continue;
-    const{a,b,li,mx,my}=info;
-    processed.add(a.id);processed.add(b.id);
-    // Safety: only remove if still in world
-    try{ World.remove(world,a); }catch(e){}
-    try{ World.remove(world,b); }catch(e){}
-    bodiesMap.delete(a.id);bodiesMap.delete(b.id);
+    Composite.remove(world,a);
+    Composite.remove(world,b);
     const nb=spawnBody(li+1,mx,my);
     Body.setVelocity(nb,{x:0,y:-2});
     nb._flash=10;
@@ -507,23 +496,25 @@ function processMerges(){
     playMerge(li+2);
     spawnParticles(mx,my,LEVELS[li+1].color,16);
   }
-  pendingMerges.clear();
 }
 
 // ─── Game Over ───
 function checkGameOver(){
-  for(const [id,li] of bodiesMap){
-    const b=world.bodies.find(x=>x.id===id);
-    if(!b)continue;
-    if(b.position.y-LEVELS[li].r<8){
-      if(!overflowTimer) overflowTimer=setTimeout(()=>{if(gameRunning)triggerGameOver();},2500);
+  const bodies=Composite.allBodies(world);
+  for(const b of bodies){
+    if(b.isStatic||b._lvIdx===undefined||b.popped)continue;
+    if(b.position.y-LEVELS[b._lvIdx].r<8){
+      if(!overflowTimer) overflowTimer=setTimeout(()=>{
+        if(gameState!=='over') triggerGameOver();
+      },2500);
       return;
     }
   }
   if(overflowTimer){clearTimeout(overflowTimer);overflowTimer=null;}
 }
 function triggerGameOver(){
-  gameRunning=false;canDrop=false;
+  gameState='over';
+  if(dropCooldownId){clearTimeout(dropCooldownId);dropCooldownId=null;}
   const lb=updateLB(playerName,score);
   const rank=lb.findIndex(r=>r.name===playerName)+1;
   document.getElementById('final-score').textContent=score.toLocaleString();
@@ -555,8 +546,7 @@ function updatePreview(){
 // ─── Render loop ───
 function loop(){
   Engine.update(engine,1000/60);
-  processMerges();
-  if(gameRunning)checkGameOver();
+  if(gameState!=='over')checkGameOver();
 
   // Background
   gCtx.clearRect(0,0,GAME_W,GAME_H);
@@ -573,11 +563,12 @@ function loop(){
   gCtx.stroke();gCtx.setLineDash([]);
 
   // Drop ghost
-  if(canDrop&&gameRunning) drawItem(gCtx,dropX,DROP_Y,LEVELS[currentIdx],.45);
+  if(gameState==='ready') drawItem(gCtx,dropX,DROP_Y,LEVELS[currentIdx],.45);
 
   // Draw bodies
-  for(const b of world.bodies){
-    if(b.label==='wall'||b._lvIdx===undefined)continue;
+  const bodies=Composite.allBodies(world);
+  for(const b of bodies){
+    if(b.isStatic||b._lvIdx===undefined||b.popped)continue;
     const ld=LEVELS[b._lvIdx];
     gCtx.save();
     gCtx.translate(b.position.x,b.position.y);
@@ -598,7 +589,7 @@ function loop(){
   gCtx.strokeRect(1.5,1.5,GAME_W-3,GAME_H-3);
 
   updateParticles();
-  if(gameRunning||particles.length>0) animId=requestAnimationFrame(loop);
+  if(gameState!=='over'||particles.length>0) animId=requestAnimationFrame(loop);
 }
 
 // ═══════════════════════════════════════════════════
@@ -613,22 +604,22 @@ function clientToGame(clientX){
   return clampX((clientX-rect.left)*(GAME_W/rect.width));
 }
 gameCanvas.addEventListener('mousemove',e=>{
-  if(!gameRunning||!canDrop)return;
+  if(gameState!=='ready')return;
   dropX=clientToGame(e.clientX);
   const l=document.getElementById('guide-line');
   l.setAttribute('x1',dropX);l.setAttribute('x2',dropX);
 });
 gameCanvas.addEventListener('click',e=>{
-  if(!gameRunning)return;
+  if(gameState==='over')return;
   drop(clientToGame(e.clientX));
 });
 gameCanvas.addEventListener('touchstart',e=>{e.preventDefault();dropX=clientToGame(e.touches[0].clientX);},{passive:false});
 gameCanvas.addEventListener('touchmove',e=>{
-  e.preventDefault();if(!gameRunning||!canDrop)return;
+  e.preventDefault();if(gameState!=='ready')return;
   dropX=clientToGame(e.touches[0].clientX);
   const l=document.getElementById('guide-line');l.setAttribute('x1',dropX);l.setAttribute('x2',dropX);
 },{passive:false});
-gameCanvas.addEventListener('touchend',e=>{e.preventDefault();if(gameRunning)drop(dropX);},{passive:false});
+gameCanvas.addEventListener('touchend',e=>{e.preventDefault();if(gameState!=='over')drop(dropX);},{passive:false});
 
 // ═══════════════════════════════════════════════════
 // BUTTONS
