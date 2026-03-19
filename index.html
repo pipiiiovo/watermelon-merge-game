@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>合成小竹君 🎮</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: linear-gradient(135deg, #1a0533 0%, #2d1b4e 50%, #1a0533 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  font-family: 'Segoe UI', sans-serif;
+  overflow-x: hidden;
+}
+#app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  width: 100%;
+  max-width: 480px;
+}
+#header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 8px;
+}
+#title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #ff9ff3;
+  text-shadow: 0 0 10px rgba(255,159,243,0.5);
+}
+#score-box {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  padding: 6px 14px;
+  text-align: center;
+}
+#score-label { font-size: 11px; color: #aaa; }
+#score { font-size: 22px; font-weight: bold; color: #ffd700; }
+#best-label { font-size: 11px; color: #aaa; }
+#best { font-size: 14px; color: #ff9ff3; }
+
+#side-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+  width: 100%;
+  max-width: 400px;
+}
+.panel-card {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 14px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.panel-label { font-size: 12px; color: #aaa; margin-bottom: 2px; }
+.panel-title { font-size: 13px; color: #fff; font-weight: 600; }
+#next-preview {
+  width: 50px; height: 50px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+#next-canvas { border-radius: 50%; }
+
+#game-wrapper {
+  position: relative;
+  width: 400px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(255,100,200,0.3), 0 0 80px rgba(100,50,200,0.2);
+}
+#gameCanvas {
+  display: block;
+  cursor: crosshair;
+  background: #0d0020;
+}
+#drop-line {
+  position: absolute;
+  top: 0; left: 0;
+  pointer-events: none;
+  width: 100%; height: 100%;
+}
+
+/* Overlay screens */
+.overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  border-radius: 16px;
+  backdrop-filter: blur(6px);
+}
+.overlay.active { display: flex; }
+.overlay h2 { font-size: 32px; color: #ff9ff3; margin-bottom: 8px; }
+.overlay p { color: #ccc; margin-bottom: 6px; font-size: 14px; }
+.overlay .big-score { font-size: 48px; font-weight: bold; color: #ffd700; margin: 10px 0; }
+.btn {
+  margin-top: 16px;
+  padding: 12px 32px;
+  font-size: 18px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #ff6ef7, #9b59b6);
+  color: white;
+  font-weight: bold;
+  box-shadow: 0 4px 20px rgba(255,100,255,0.4);
+  transition: transform 0.1s;
+}
+.btn:hover { transform: scale(1.05); }
+.btn:active { transform: scale(0.97); }
+
+/* Particle canvas */
+#particle-canvas {
+  position: absolute;
+  top: 0; left: 0;
+  pointer-events: none;
+  width: 100%; height: 100%;
+}
+
+/* Level guide */
+#level-guide {
+  width: 100%;
+  max-width: 400px;
+  margin-top: 10px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 14px;
+  padding: 10px;
+}
+#level-guide h3 { color: #ff9ff3; font-size: 13px; margin-bottom: 8px; text-align: center; }
+#level-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 4px;
+}
+.level-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.level-dot {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8px;
+  color: rgba(255,255,255,0.9);
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+  flex-shrink: 0;
+}
+.level-name { font-size: 7px; color: #aaa; text-align: center; line-height: 1.2; }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="header">
+    <div id="title">🎀 合成小竹君</div>
+    <div id="score-box">
+      <div id="score-label">得分</div>
+      <div id="score">0</div>
+      <div id="best-label">最高</div>
+      <div id="best">0</div>
+    </div>
+  </div>
+
+  <div id="side-panel">
+    <div class="panel-card">
+      <canvas id="next-canvas" width="50" height="50"></canvas>
+      <div>
+        <div class="panel-label">下一个</div>
+        <div class="panel-title" id="next-name">—</div>
+      </div>
+      <div style="margin-left:auto; text-align:right">
+        <div class="panel-label">当前</div>
+        <div class="panel-title" id="current-name">—</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="game-wrapper">
+    <canvas id="gameCanvas" width="400" height="520"></canvas>
+    <canvas id="particle-canvas" width="400" height="520"></canvas>
+    <svg id="drop-line" xmlns="http://www.w3.org/2000/svg">
+      <line id="guide-line" x1="200" y1="0" x2="200" y2="520"
+        stroke="rgba(255,255,255,0.15)" stroke-width="1" stroke-dasharray="6,6"/>
+    </svg>
+    <div class="overlay" id="start-screen">
+      <div style="font-size:60px">🎀</div>
+      <h2>合成小竹君</h2>
+      <p>点击放下人物，相同等级合成升级！</p>
+      <p style="color:#ff9ff3">32个形态等你解锁 ✨</p>
+      <button class="btn" id="start-btn">开始游戏</button>
+    </div>
+    <div class="overlay" id="gameover-screen">
+      <div style="font-size:50px">😵</div>
+      <h2>游戏结束</h2>
+      <p>本局得分</p>
+      <div class="big-score" id="final-score">0</div>
+      <p id="gameover-msg">再试一次？</p>
+      <button class="btn" id="restart-btn">再来一局</button>
+    </div>
+  </div>
+
+  <div id="level-guide">
+    <h3>✨ 32级形态图鉴</h3>
+    <div id="level-grid"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// LEVEL DEFINITIONS - 32 levels
+// ============================================================
+const LEVELS = [
+  // Lv 1-8: Basic emotions
+  { lv:1,  emoji:'😊', name:'微笑竹君',   r:15,  color:'#FF9AA2' },
+  { lv:2,  emoji:'😲', name:'惊讶竹君',   r:19,  color:'#FFB7B2' },
+  { lv:3,  emoji:'😕', name:'困惑竹君',   r:23,  color:'#FFDAC1' },
+  { lv:4,  emoji:'😂', name:'大笑竹君',   r:27,  color:'#E2F0CB' },
+  { lv:5,  emoji:'😭', name:'痛哭竹君',   r:31,  color:'#B5EAD7' },
+  { lv:6,  emoji:'😡', name:'愤怒竹君',   r:35,  color:'#C7CEEA' },
+  { lv:7,  emoji:'😴', name:'瞌睡竹君',   r:39,  color:'#DCC7F0' },
+  { lv:8,  emoji:'😶', name:'发呆竹君',   r:43,  color:'#F0E6FF' },
+  // Lv 9-16: Exaggerated reactions
+  { lv:9,  emoji:'🤢', name:'中毒竹君',   r:47,  color:'#9BF0A0' },
+  { lv:10, emoji:'🐸', name:'青蛙竹君',   r:51,  color:'#77DD77' },
+  { lv:11, emoji:'😇', name:'天使竹君',   r:55,  color:'#FFFDD0' },
+  { lv:12, emoji:'🐷', name:'肥胖竹君',   r:59,  color:'#FFB3DE' },
+  { lv:13, emoji:'💃', name:'纤细竹君',   r:63,  color:'#FF99CC' },
+  { lv:14, emoji:'💥', name:'爆炸头竹君', r:67,  color:'#FFAA00' },
+  { lv:15, emoji:'💭', name:'冒泡竹君',   r:71,  color:'#AAE4FF' },
+  { lv:16, emoji:'🤩', name:'星眼竹君',   r:75,  color:'#FFD700' },
+  // Lv 17-24: Costumes
+  { lv:17, emoji:'👸', name:'公主竹君',   r:79,  color:'#FFB6C1' },
+  { lv:18, emoji:'🥷', name:'忍者竹君',   r:83,  color:'#2F2F2F' },
+  { lv:19, emoji:'🧙', name:'魔女竹君',   r:87,  color:'#6A0DAD' },
+  { lv:20, emoji:'👨‍🚀', name:'宇航竹君',  r:91,  color:'#4FC3F7' },
+  { lv:21, emoji:'👨‍🍳', name:'厨师竹君',  r:95,  color:'#FFFFFF' },
+  { lv:22, emoji:'🏃', name:'运动竹君',   r:99,  color:'#FF6B35' },
+  { lv:23, emoji:'🕵️', name:'侦探竹君',   r:103, color:'#8B6914' },
+  { lv:24, emoji:'🦸', name:'超人竹君',   r:107, color:'#1565C0' },
+  // Lv 25-31: Supernatural
+  { lv:25, emoji:'🗿', name:'巨人竹君',   r:111, color:'#A0A0A0' },
+  { lv:26, emoji:'👻', name:'透明竹君',   r:113, color:'rgba(200,200,255,0.7)' },
+  { lv:27, emoji:'✨', name:'发光竹君',   r:115, color:'#FFFF99' },
+  { lv:28, emoji:'👾', name:'像素竹君',   r:117, color:'#00FF41' },
+  { lv:29, emoji:'👴', name:'老奶奶竹君', r:119, color:'#D3D3D3' },
+  { lv:30, emoji:'👶', name:'婴儿竹君',   r:120, color:'#FFD6A5' },
+  { lv:31, emoji:'💧', name:'融化竹君',   r:121, color:'#89CFF0' },
+  // Lv 32: Ultimate
+  { lv:32, emoji:'👑', name:'宇宙女神',   r:122, color:'#FFD700' },
+];
+
+// ============================================================
+// AUDIO
+// ============================================================
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null;
+function getAudio() {
+  if (!audioCtx) audioCtx = new AudioCtx();
+  return audioCtx;
+}
+function playMerge(level) {
+  try {
+    const ctx = getAudio();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    const freq = 300 + level * 40;
+    o.frequency.setValueAtTime(freq, ctx.currentTime);
+    o.frequency.exponentialRampToValueAtTime(freq * 1.5, ctx.currentTime + 0.1);
+    g.gain.setValueAtTime(0.18, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    o.type = 'sine';
+    o.start(ctx.currentTime);
+    o.stop(ctx.currentTime + 0.3);
+  } catch(e){}
+}
+function playDrop() {
+  try {
+    const ctx = getAudio();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.connect(g); g.connect(ctx.destination);
+    o.frequency.setValueAtTime(220, ctx.currentTime);
+    g.gain.setValueAtTime(0.08, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.1);
+    o.type = 'triangle';
+    o.start(ctx.currentTime);
+    o.stop(ctx.currentTime + 0.1);
+  } catch(e){}
+}
+
+// ============================================================
+// PARTICLES
+// ============================================================
+const pCanvas = document.getElementById('particle-canvas');
+const pCtx = pCanvas.getContext('2d');
+let particles = [];
+function spawnParticles(x, y, color, count=12) {
+  for(let i=0;i<count;i++) {
+    const angle = (Math.PI*2/count)*i + Math.random()*0.3;
+    const speed = 2 + Math.random()*3;
+    particles.push({
+      x, y,
+      vx: Math.cos(angle)*speed,
+      vy: Math.sin(angle)*speed,
+      life: 1, decay: 0.025 + Math.random()*0.02,
+      r: 3 + Math.random()*4,
+      color
+    });
+  }
+}
+function updateParticles() {
+  pCtx.clearRect(0,0,400,520);
+  particles = particles.filter(p => p.life > 0);
+  for(const p of particles) {
+    p.x += p.vx; p.y += p.vy;
+    p.vy += 0.12;
+    p.life -= p.decay;
+    pCtx.globalAlpha = p.life;
+    pCtx.fillStyle = p.color;
+    pCtx.beginPath();
+    pCtx.arc(p.x, p.y, p.r * p.life, 0, Math.PI*2);
+    pCtx.fill();
+  }
+  pCtx.globalAlpha = 1;
+}
+
+// ============================================================
+// DRAW LEVEL ITEM
+// ============================================================
+function drawItem(ctx, x, y, lvData, alpha=1) {
+  const { r, color, emoji, lv } = lvData;
+  ctx.save();
+  ctx.globalAlpha = alpha;
+
+  // Glow effect for high levels
+  if (lv >= 16) {
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = color;
+  }
+
+  // Draw circle
+  const grad = ctx.createRadialGradient(x - r*0.3, y - r*0.3, r*0.1, x, y, r);
+  grad.addColorStop(0, lightenColor(color, 60));
+  grad.addColorStop(1, darkenColor(color, 30));
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI*2);
+  ctx.fill();
+
+  // Border
+  ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  ctx.shadowBlur = 0;
+
+  // Emoji
+  const fontSize = Math.max(10, Math.floor(r * 0.9));
+  ctx.font = `${fontSize}px serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(emoji, x, y - 1);
+
+  // Level badge
+  if (r > 30) {
+    ctx.font = `bold ${Math.max(8, Math.floor(r*0.3))}px sans-serif`;
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.fillText(`Lv.${lv}`, x, y + r*0.6);
+  }
+
+  ctx.restore();
+}
+
+function lightenColor(hex, amt) {
+  try {
+    if(hex.startsWith('rgba')) return '#ffffff';
+    const num = parseInt(hex.slice(1), 16);
+    const r = Math.min(255, (num >> 16) + amt);
+    const g = Math.min(255, ((num >> 8) & 0xff) + amt);
+    const b = Math.min(255, (num & 0xff) + amt);
+    return `rgb(${r},${g},${b})`;
+  } catch(e) { return hex; }
+}
+function darkenColor(hex, amt) {
+  try {
+    if(hex.startsWith('rgba')) return '#aaaaff';
+    const num = parseInt(hex.slice(1), 16);
+    const r = Math.max(0, (num >> 16) - amt);
+    const g = Math.max(0, ((num >> 8) & 0xff) - amt);
+    const b = Math.max(0, (num & 0xff) - amt);
+    return `rgb(${r},${g},${b})`;
+  } catch(e) { return hex; }
+}
+
+// ============================================================
+// LEVEL GUIDE
+// ============================================================
+(function buildGuide() {
+  const grid = document.getElementById('level-grid');
+  LEVELS.forEach(lv => {
+    const item = document.createElement('div');
+    item.className = 'level-item';
+    const size = Math.min(28, Math.max(12, lv.r * 0.35));
+    item.innerHTML = `
+      <div class="level-dot" style="width:${size}px;height:${size}px;background:${lv.color};font-size:${size*0.6}px">
+        ${lv.emoji}
+      </div>
+      <div class="level-name">${lv.name.replace('竹君','')}</div>
+    `;
+    grid.appendChild(item);
+  });
+})();
+
+// ============================================================
+// GAME ENGINE
+// ============================================================
+const { Engine, Render, Runner, World, Bodies, Events, Body, Vector } = Matter;
+
+const GAME_W = 400, GAME_H = 520;
+const WALL_T = 30;
+const DROP_Y = 40; // y position where items are dropped from
+
+let engine, world;
+let score = 0, bestScore = parseInt(localStorage.getItem('wm_best')||'0');
+let currentLvIdx = 0, nextLvIdx = 0;
+let dropX = GAME_W / 2;
+let canDrop = true;
+let gameRunning = false;
+let bodiesMap = new Map(); // body.id -> levelIndex
+let overflowTimer = null;
+let gameCanvas = document.getElementById('gameCanvas');
+let gCtx = gameCanvas.getContext('2d');
+let animId;
+let merging = new Set(); // ids being merged this frame (prevent double-merge)
+
+document.getElementById('best').textContent = bestScore;
+
+function randomNextLevel() {
+  // Only levels 1-7 can be randomly spawned (easier)
+  const maxSpawn = Math.min(7, Math.floor(score / 500) + 3);
+  return Math.floor(Math.random() * maxSpawn);
+}
+
+function initGame() {
+  // Clean up
+  if(engine) { World.clear(world); Engine.clear(engine); }
+  if(animId) cancelAnimationFrame(animId);
+  particles = [];
+  bodiesMap.clear();
+  merging.clear();
+  score = 0;
+  canDrop = true;
+  gameRunning = true;
+  dropX = GAME_W / 2;
+  updateScoreUI();
+
+  currentLvIdx = randomNextLevel();
+  nextLvIdx = randomNextLevel();
+  updateNextPreview();
+
+  // Physics engine
+  engine = Engine.create({ gravity: { y: 1.8 } });
+  world = engine.world;
+
+  // Walls: bottom, left, right
+  const wallOpts = { isStatic: true, friction: 0.5, restitution: 0.3, label:'wall' };
+  World.add(world, [
+    Bodies.rectangle(GAME_W/2, GAME_H + WALL_T/2, GAME_W, WALL_T, wallOpts), // floor
+    Bodies.rectangle(-WALL_T/2, GAME_H/2, WALL_T, GAME_H*2, wallOpts),       // left
+    Bodies.rectangle(GAME_W + WALL_T/2, GAME_H/2, WALL_T, GAME_H*2, wallOpts) // right
+  ]);
+
+  // Collision detection
+  Events.on(engine, 'collisionStart', handleCollision);
+
+  loop();
+}
+
+function spawnBody(lvIdx, x, y) {
+  const lv = LEVELS[lvIdx];
+  const body = Bodies.circle(x, y, lv.r, {
+    restitution: 0.3,
+    friction: 0.6,
+    frictionAir: 0.005,
+    density: 0.002,
+    label: 'fruit_' + lvIdx
+  });
+  body._lvIdx = lvIdx;
+  World.add(world, body);
+  bodiesMap.set(body.id, lvIdx);
+  return body;
+}
+
+function drop(x) {
+  if (!canDrop || !gameRunning) return;
+  canDrop = false;
+  playDrop();
+  const lvIdx = currentLvIdx;
+  spawnBody(lvIdx, x, DROP_Y);
+  currentLvIdx = nextLvIdx;
+  nextLvIdx = randomNextLevel();
+  updateNextPreview();
+  setTimeout(() => { if(gameRunning) canDrop = true; }, 600);
+}
+
+function handleCollision(e) {
+  const pairs = e.pairs;
+  for(const pair of pairs) {
+    const a = pair.bodyA, b = pair.bodyB;
+    if(a.label === 'wall' || b.label === 'wall') continue;
+    if(a._lvIdx === undefined || b._lvIdx === undefined) continue;
+    if(merging.has(a.id) || merging.has(b.id)) continue;
+    if(a._lvIdx === b._lvIdx) {
+      const lvIdx = a._lvIdx;
+      if(lvIdx >= LEVELS.length - 1) continue; // max level, no merge
+      merging.add(a.id);
+      merging.add(b.id);
+      // Merge position = midpoint
+      const mx = (a.position.x + b.position.x) / 2;
+      const my = (a.position.y + b.position.y) / 2;
+      // Remove both
+      World.remove(world, a);
+      World.remove(world, b);
+      bodiesMap.delete(a.id);
+      bodiesMap.delete(b.id);
+      // Spawn next level
+      const newLvIdx = lvIdx + 1;
+      const newBody = spawnBody(newLvIdx, mx, my);
+      // Give slight upward nudge
+      Body.setVelocity(newBody, { x: 0, y: -2 });
+      // Score
+      const pts = Math.pow(newLvIdx + 1, 2) * 10;
+      score += pts;
+      updateScoreUI();
+      playMerge(newLvIdx);
+      spawnParticles(mx, my, LEVELS[newLvIdx].color, 14);
+      // Flash effect
+      newBody._flash = 8;
+    }
+  }
+}
+
+function checkGameOver() {
+  for(const [id, lvIdx] of bodiesMap) {
+    // Find the body
+    const body = world.bodies.find(b => b.id === id);
+    if(!body) continue;
+    // If any body's top is above danger line (accounting for radius)
+    const topY = body.position.y - LEVELS[lvIdx].r;
+    if(topY < 10) {
+      if(!overflowTimer) {
+        overflowTimer = setTimeout(() => {
+          if(gameRunning) triggerGameOver();
+        }, 2500);
+      }
+      return;
+    }
+  }
+  if(overflowTimer) { clearTimeout(overflowTimer); overflowTimer = null; }
+}
+
+function triggerGameOver() {
+  gameRunning = false;
+  canDrop = false;
+  if(score > bestScore) {
+    bestScore = score;
+    localStorage.setItem('wm_best', bestScore);
+    document.getElementById('best').textContent = bestScore;
+    document.getElementById('gameover-msg').textContent = '🎉 新纪录！厉害了！';
+  } else {
+    document.getElementById('gameover-msg').textContent = '再试一次吧，加油！💪';
+  }
+  document.getElementById('final-score').textContent = score;
+  document.getElementById('gameover-screen').classList.add('active');
+}
+
+function updateScoreUI() {
+  document.getElementById('score').textContent = score;
+  if(score > bestScore) document.getElementById('best').textContent = score;
+}
+
+function updateNextPreview() {
+  // Update text labels
+  const cur = LEVELS[currentLvIdx];
+  const nxt = LEVELS[nextLvIdx];
+  document.getElementById('current-name').textContent = cur.emoji + ' ' + cur.name;
+  document.getElementById('next-name').textContent = nxt.emoji + ' ' + nxt.name;
+  // Draw next preview
+  const nc = document.getElementById('next-canvas');
+  const nx = nc.getContext('2d');
+  nx.clearRect(0,0,50,50);
+  // dark bg
+  nx.fillStyle = 'rgba(0,0,0,0.3)';
+  nx.beginPath(); nx.arc(25,25,24,0,Math.PI*2); nx.fill();
+  drawItem(nx, 25, 25, nxt, 1);
+}
+
+// ============================================================
+// RENDER LOOP
+// ============================================================
+function loop() {
+  Engine.update(engine, 1000/60);
+  merging.clear();
+
+  // Check game over
+  if(gameRunning) checkGameOver();
+
+  // Draw
+  gCtx.clearRect(0, 0, GAME_W, GAME_H);
+
+  // Background gradient
+  const bg = gCtx.createLinearGradient(0, 0, 0, GAME_H);
+  bg.addColorStop(0, '#0d0020');
+  bg.addColorStop(1, '#1a0030');
+  gCtx.fillStyle = bg;
+  gCtx.fillRect(0, 0, GAME_W, GAME_H);
+
+  // Danger zone line
+  gCtx.strokeStyle = 'rgba(255,80,80,0.2)';
+  gCtx.lineWidth = 1;
+  gCtx.setLineDash([8, 8]);
+  gCtx.beginPath();
+  gCtx.moveTo(0, DROP_Y + LEVELS[currentLvIdx].r + 10);
+  gCtx.lineTo(GAME_W, DROP_Y + LEVELS[currentLvIdx].r + 10);
+  gCtx.stroke();
+  gCtx.setLineDash([]);
+
+  // Draw drop preview (ghost)
+  if(canDrop && gameRunning) {
+    drawItem(gCtx, dropX, DROP_Y, LEVELS[currentLvIdx], 0.5);
+  }
+
+  // Draw all bodies
+  for(const body of world.bodies) {
+    if(body.label === 'wall') continue;
+    if(body._lvIdx === undefined) continue;
+    const lvData = LEVELS[body._lvIdx];
+    const flash = body._flash || 0;
+    gCtx.save();
+    gCtx.translate(body.position.x, body.position.y);
+    gCtx.rotate(body.angle);
+    gCtx.translate(-body.position.x, -body.position.y);
+    drawItem(gCtx, body.position.x, body.position.y, lvData, 1);
+    if(flash > 0) {
+      gCtx.globalAlpha = flash / 8 * 0.6;
+      gCtx.fillStyle = '#ffffff';
+      gCtx.beginPath();
+      gCtx.arc(body.position.x, body.position.y, lvData.r, 0, Math.PI*2);
+      gCtx.fill();
+      body._flash--;
+    }
+    gCtx.restore();
+  }
+
+  // Wall edges glow
+  gCtx.strokeStyle = 'rgba(180,100,255,0.3)';
+  gCtx.lineWidth = 3;
+  gCtx.strokeRect(1.5, 1.5, GAME_W-3, GAME_H-3);
+
+  updateParticles();
+
+  if(gameRunning || particles.length > 0) {
+    animId = requestAnimationFrame(loop);
+  }
+}
+
+// ============================================================
+// INPUT
+// ============================================================
+function getDropX(clientX) {
+  const rect = gameCanvas.getBoundingClientRect();
+  const scaleX = GAME_W / rect.width;
+  let x = (clientX - rect.left) * scaleX;
+  const lv = LEVELS[currentLvIdx];
+  return Math.max(lv.r + 5, Math.min(GAME_W - lv.r - 5, x));
+}
+
+gameCanvas.addEventListener('mousemove', e => {
+  if(!gameRunning || !canDrop) return;
+  dropX = getDropX(e.clientX);
+  document.getElementById('guide-line').setAttribute('x1', dropX);
+  document.getElementById('guide-line').setAttribute('x2', dropX);
+});
+
+gameCanvas.addEventListener('click', e => {
+  if(!gameRunning) return;
+  dropX = getDropX(e.clientX);
+  drop(dropX);
+});
+
+let touchDropX = GAME_W/2;
+gameCanvas.addEventListener('touchstart', e => {
+  e.preventDefault();
+  touchDropX = getDropX(e.touches[0].clientX);
+  dropX = touchDropX;
+}, { passive: false });
+gameCanvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if(!gameRunning || !canDrop) return;
+  dropX = getDropX(e.touches[0].clientX);
+  document.getElementById('guide-line').setAttribute('x1', dropX);
+  document.getElementById('guide-line').setAttribute('x2', dropX);
+}, { passive: false });
+gameCanvas.addEventListener('touchend', e => {
+  e.preventDefault();
+  if(!gameRunning) return;
+  drop(dropX);
+}, { passive: false });
+
+// Buttons
+document.getElementById('start-btn').addEventListener('click', () => {
+  document.getElementById('start-screen').classList.remove('active');
+  initGame();
+});
+document.getElementById('restart-btn').addEventListener('click', () => {
+  document.getElementById('gameover-screen').classList.remove('active');
+  if(overflowTimer) { clearTimeout(overflowTimer); overflowTimer = null; }
+  initGame();
+});
+
+// Show start screen
+document.getElementById('start-screen').classList.add('active');
+</script>
+</body>
+</html>
