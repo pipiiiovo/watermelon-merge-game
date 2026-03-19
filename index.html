@@ -424,7 +424,7 @@ function rndSpawn(){ return SPAWN_POOL[Math.floor(Math.random()*SPAWN_POOL.lengt
 function initGame(){
   if(engine){World.clear(world);Engine.clear(engine);}
   if(animId) cancelAnimationFrame(animId);
-  particles=[];bodiesMap.clear();merging.clear();
+  particles=[];bodiesMap.clear();merging.clear();pendingMerges.clear();
   score=0;canDrop=true;gameRunning=true;dropX=GAME_W/2;
   if(dropCooldownId!==null){clearTimeout(dropCooldownId);dropCooldownId=null;}
   document.getElementById('score').textContent='0';
@@ -471,30 +471,43 @@ function drop(x){
 }
 
 // ─── Collision / Merge ───
+const pendingMerges = new Map(); // bodyId -> merge info
 function handleCollision(e){
   for(const pair of e.pairs){
     const a=pair.bodyA,b=pair.bodyB;
     if(a.label==='wall'||b.label==='wall')continue;
     if(a._lvIdx===undefined||b._lvIdx===undefined)continue;
-    if(merging.has(a.id)||merging.has(b.id))continue;
     if(a._lvIdx!==b._lvIdx)continue;
     const li=a._lvIdx;
     if(li>=LEVELS.length-1)continue;
-    merging.add(a.id);merging.add(b.id);
+    // Skip if either body already scheduled for merge
+    if(pendingMerges.has(a.id)||pendingMerges.has(b.id))continue;
     const mx=(a.position.x+b.position.x)/2;
     const my=(a.position.y+b.position.y)/2;
-    // Remove from world + maps, then clean merging set
-    World.remove(world,a);World.remove(world,b);
+    pendingMerges.set(a.id,{a,b,li,mx,my});
+    pendingMerges.set(b.id,{ref:a.id}); // mark b as part of this merge
+  }
+}
+function processMerges(){
+  const processed = new Set();
+  for(const [id, info] of pendingMerges){
+    if(info.ref!==undefined){ continue; } // skip secondary entries
+    if(processed.has(id))continue;
+    const{a,b,li,mx,my}=info;
+    processed.add(a.id);processed.add(b.id);
+    // Safety: only remove if still in world
+    try{ World.remove(world,a); }catch(e){}
+    try{ World.remove(world,b); }catch(e){}
     bodiesMap.delete(a.id);bodiesMap.delete(b.id);
-    merging.delete(a.id);merging.delete(b.id);
     const nb=spawnBody(li+1,mx,my);
-    Body.setVelocity(nb,{x:0,y:-2.5});
+    Body.setVelocity(nb,{x:0,y:-2});
     nb._flash=10;
     score+=Math.pow(li+2,2)*10;
     document.getElementById('score').textContent=score;
     playMerge(li+2);
     spawnParticles(mx,my,LEVELS[li+1].color,16);
   }
+  pendingMerges.clear();
 }
 
 // ─── Game Over ───
@@ -542,6 +555,7 @@ function updatePreview(){
 // ─── Render loop ───
 function loop(){
   Engine.update(engine,1000/60);
+  processMerges();
   if(gameRunning)checkGameOver();
 
   // Background
