@@ -13,150 +13,65 @@ body{
   font-family:'Segoe UI',sans-serif;overflow-x:hidden;
 }
 #app{display:flex;flex-direction:column;align-items:center;padding:8px;width:100%;max-width:420px;}
-
-/* ── Top bar ── */
-#topbar{
-  display:flex;justify-content:space-between;align-items:center;
-  width:100%;max-width:360px;margin-bottom:6px;gap:6px;
-}
+#topbar{display:flex;justify-content:space-between;align-items:center;width:100%;max-width:360px;margin-bottom:6px;gap:6px;}
 #title{font-size:17px;font-weight:bold;color:#ff9ff3;text-shadow:0 0 8px rgba(255,159,243,.5);white-space:nowrap;}
-#score-box{
-  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);
-  border-radius:10px;padding:4px 10px;text-align:center;min-width:72px;
-}
+#score-box{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:10px;padding:4px 10px;text-align:center;min-width:72px;}
 #score-label{font-size:10px;color:#aaa;}
 #score{font-size:20px;font-weight:bold;color:#ffd700;}
-#leaderboard-btn{
-  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);
-  border-radius:10px;padding:5px 10px;cursor:pointer;color:#fff;font-size:12px;
-  white-space:nowrap;transition:background .2s;
-}
-#leaderboard-btn:hover{background:rgba(255,255,255,.2);}
-
-/* ── Next preview ── */
-#preview-bar{
-  display:flex;align-items:center;gap:10px;width:100%;max-width:360px;
-  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
-  border-radius:12px;padding:6px 12px;margin-bottom:6px;
-}
+#leaderboard-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:5px 10px;cursor:pointer;color:#fff;font-size:12px;white-space:nowrap;}
+#preview-bar{display:flex;align-items:center;gap:10px;width:100%;max-width:360px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:6px 12px;margin-bottom:6px;}
 #current-info,.sep,#next-info{flex:1;text-align:center;}
 .sep{color:rgba(255,255,255,.3);font-size:18px;}
 .preview-lbl{font-size:10px;color:#aaa;margin-bottom:2px;}
 .preview-name{font-size:12px;color:#fff;font-weight:600;}
-#next-canvas-wrap{display:flex;align-items:center;justify-content:center;}
-
-/* ── Game wrapper ── */
-#game-wrapper{
-  position:relative;width:360px;
-  border-radius:14px;overflow:hidden;
-  box-shadow:0 0 30px rgba(255,100,200,.3),0 0 60px rgba(100,50,200,.2);
-}
+#game-wrapper{position:relative;width:360px;border-radius:14px;overflow:hidden;box-shadow:0 0 30px rgba(255,100,200,.3);}
 #gameCanvas{display:block;cursor:crosshair;background:#0d0020;}
 #particle-canvas{position:absolute;top:0;left:0;pointer-events:none;}
 #drop-svg{position:absolute;top:0;left:0;pointer-events:none;width:100%;height:100%;}
-
-/* ── Overlays ── */
-.overlay{
-  display:none;position:absolute;inset:0;
-  background:rgba(0,0,0,.88);flex-direction:column;align-items:center;
-  justify-content:center;z-index:100;border-radius:14px;
-  backdrop-filter:blur(8px);padding:20px;
-}
+.overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.88);flex-direction:column;align-items:center;justify-content:center;z-index:100;border-radius:14px;backdrop-filter:blur(8px);padding:20px;}
 .overlay.active{display:flex;}
 .overlay h2{font-size:28px;color:#ff9ff3;margin-bottom:8px;text-align:center;}
 .overlay p{color:#ccc;margin-bottom:5px;font-size:13px;text-align:center;}
 .big-score{font-size:44px;font-weight:bold;color:#ffd700;margin:8px 0;}
-.btn{
-  margin-top:14px;padding:10px 28px;font-size:16px;border:none;
-  border-radius:50px;cursor:pointer;
-  background:linear-gradient(135deg,#ff6ef7,#9b59b6);
-  color:#fff;font-weight:bold;
-  box-shadow:0 4px 16px rgba(255,100,255,.4);
-  transition:transform .1s;
-}
-.btn:hover{transform:scale(1.05);}
-.btn:active{transform:scale(.97);}
-input.name-input{
-  margin-top:8px;padding:10px 16px;font-size:16px;
-  border:2px solid rgba(255,159,243,.5);border-radius:50px;
-  background:rgba(255,255,255,.1);color:#fff;
-  text-align:center;outline:none;width:200px;
-}
+.btn{margin-top:14px;padding:10px 28px;font-size:16px;border:none;border-radius:50px;cursor:pointer;background:linear-gradient(135deg,#ff6ef7,#9b59b6);color:#fff;font-weight:bold;box-shadow:0 4px 16px rgba(255,100,255,.4);}
+input.name-input{margin-top:8px;padding:10px 16px;font-size:16px;border:2px solid rgba(255,159,243,.5);border-radius:50px;background:rgba(255,255,255,.1);color:#fff;text-align:center;outline:none;width:200px;}
 input.name-input::placeholder{color:rgba(255,255,255,.4);}
-input.name-input:focus{border-color:#ff9ff3;}
-
-/* ── Leaderboard overlay ── */
-#lb-overlay{
-  display:none;position:absolute;inset:0;
-  background:rgba(0,0,0,.92);flex-direction:column;align-items:center;
-  z-index:200;border-radius:14px;backdrop-filter:blur(10px);
-  padding:16px;overflow-y:auto;
-}
+#lb-overlay{display:none;position:absolute;inset:0;background:rgba(0,0,0,.92);flex-direction:column;align-items:center;z-index:200;border-radius:14px;backdrop-filter:blur(10px);padding:16px;overflow-y:auto;}
 #lb-overlay.active{display:flex;}
 #lb-overlay h2{font-size:22px;color:#ffd700;margin-bottom:12px;}
 #lb-list{width:100%;max-width:300px;}
-.lb-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:6px 10px;border-radius:8px;margin-bottom:4px;
-  background:rgba(255,255,255,.06);font-size:13px;color:#eee;
-}
+.lb-row{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-radius:8px;margin-bottom:4px;background:rgba(255,255,255,.06);font-size:13px;color:#eee;}
 .lb-row.me{background:rgba(255,159,243,.15);color:#ff9ff3;font-weight:bold;}
 .lb-rank{width:24px;font-weight:bold;color:#ffd700;}
 .lb-name{flex:1;margin:0 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .lb-score{font-weight:bold;color:#ffd700;}
-#lb-close{margin-top:12px;}
-
-/* ── Level guide ── */
-#level-guide{
-  width:100%;max-width:360px;margin-top:8px;
-  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
-  border-radius:12px;padding:8px;
-}
+#level-guide{width:100%;max-width:360px;margin-top:8px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:8px;}
 #level-guide h3{color:#ff9ff3;font-size:12px;margin-bottom:6px;text-align:center;}
 #level-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;}
 .level-item{display:flex;flex-direction:column;align-items:center;gap:1px;}
-.level-dot{
-  border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:8px;color:rgba(255,255,255,.9);font-weight:bold;
-  text-shadow:0 1px 2px rgba(0,0,0,.8);flex-shrink:0;
-}
+.level-dot{border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;color:rgba(255,255,255,.9);font-weight:bold;flex-shrink:0;}
 .level-name{font-size:6.5px;color:#aaa;text-align:center;line-height:1.2;}
 </style>
 </head>
 <body>
 <div id="app">
-
   <div id="topbar">
     <div id="title">🎀 合成小竹君</div>
-    <div id="score-box">
-      <div id="score-label">得分</div>
-      <div id="score">0</div>
-    </div>
+    <div id="score-box"><div id="score-label">得分</div><div id="score">0</div></div>
     <button id="leaderboard-btn">🏆 榜单</button>
   </div>
-
   <div id="preview-bar">
-    <div id="current-info">
-      <div class="preview-lbl">当前</div>
-      <div class="preview-name" id="current-name">—</div>
-    </div>
+    <div id="current-info"><div class="preview-lbl">当前</div><div class="preview-name" id="current-name">—</div></div>
     <div class="sep">▶</div>
-    <div id="next-info">
-      <div class="preview-lbl">下一个</div>
-      <div class="preview-name" id="next-name">—</div>
-    </div>
+    <div id="next-info"><div class="preview-lbl">下一个</div><div class="preview-name" id="next-name">—</div></div>
     <canvas id="next-canvas" width="44" height="44"></canvas>
   </div>
-
   <div id="game-wrapper">
     <canvas id="gameCanvas" width="360" height="520"></canvas>
     <canvas id="particle-canvas" width="360" height="520"></canvas>
     <svg id="drop-svg" viewBox="0 0 360 520" xmlns="http://www.w3.org/2000/svg">
-      <line id="guide-line" x1="180" y1="0" x2="180" y2="520"
-        stroke="rgba(255,255,255,.15)" stroke-width="1" stroke-dasharray="5,5"/>
+      <line id="guide-line" x1="180" y1="0" x2="180" y2="520" stroke="rgba(255,255,255,.15)" stroke-width="1" stroke-dasharray="5,5"/>
     </svg>
-
-    <!-- Start / Name entry -->
     <div class="overlay active" id="start-screen">
       <div style="font-size:52px">🎀</div>
       <h2>合成小竹君</h2>
@@ -165,8 +80,6 @@ input.name-input:focus{border-color:#ff9ff3;}
       <input class="name-input" id="name-input" placeholder="输入你的名字" maxlength="12">
       <button class="btn" id="start-btn">开始游戏</button>
     </div>
-
-    <!-- Game Over -->
     <div class="overlay" id="gameover-screen">
       <div style="font-size:46px">😵</div>
       <h2>游戏结束</h2>
@@ -175,134 +88,102 @@ input.name-input:focus{border-color:#ff9ff3;}
       <p id="gameover-msg"></p>
       <button class="btn" id="restart-btn">再来一局</button>
     </div>
-
-    <!-- Leaderboard -->
     <div id="lb-overlay">
       <h2>🏆 本机榜单</h2>
       <div id="lb-list"></div>
       <button class="btn" id="lb-close">关闭</button>
     </div>
   </div>
-
   <div id="level-guide">
-    <h3>✨ 32级形态图鉴（越右越大，越难合成）</h3>
+    <h3>✨ 32级形态图鉴</h3>
     <div id="level-grid"></div>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════
-// LEVEL DATA — 32 levels, Lv32 is LARGEST (hardest)
-// Spawn pool: only Lv1–5 (smallest), random from these
-// ═══════════════════════════════════════════════════
+// ── LEVELS ──────────────────────────────────────────
 const LEVELS = [
-  // Lv32 max r=120 (=360/3), Lv1 min r=15, evenly spaced
-  {lv:1, emoji:'😊', name:'微笑竹君',    r:15,  color:'#FF9AA2'},
-  {lv:2, emoji:'😲', name:'惊讶竹君',    r:19,  color:'#FFB7B2'},
-  {lv:3, emoji:'😕', name:'困惑竹君',    r:23,  color:'#FFDAC1'},
-  {lv:4, emoji:'😂', name:'大笑竹君',    r:27,  color:'#E2F0CB'},
-  {lv:5, emoji:'😭', name:'痛哭竹君',    r:32,  color:'#B5EAD7'},
-  {lv:6, emoji:'😡', name:'愤怒竹君',    r:37,  color:'#C7CEEA'},
-  {lv:7, emoji:'😴', name:'瞌睡竹君',    r:42,  color:'#DCC7F0'},
-  {lv:8, emoji:'😶', name:'发呆竹君',    r:47,  color:'#F0E6FF'},
-  {lv:9, emoji:'🤢', name:'中毒竹君',    r:52,  color:'#9BF0A0'},
-  {lv:10,emoji:'🐸', name:'青蛙竹君',    r:57,  color:'#77DD77'},
-  {lv:11,emoji:'😇', name:'天使竹君',    r:62,  color:'#FFFDD0'},
-  {lv:12,emoji:'🐷', name:'肥胖竹君',    r:66,  color:'#FFB3DE'},
-  {lv:13,emoji:'💃', name:'纤细竹君',    r:70,  color:'#FF99CC'},
-  {lv:14,emoji:'💥', name:'爆炸头竹君',  r:74,  color:'#FFAA00'},
-  {lv:15,emoji:'💭', name:'冒泡竹君',    r:78,  color:'#AAE4FF'},
-  {lv:16,emoji:'🤩', name:'星眼竹君',    r:82,  color:'#FFD700'},
-  {lv:17,emoji:'👸', name:'公主竹君',    r:86,  color:'#FFB6C1'},
-  {lv:18,emoji:'🥷', name:'忍者竹君',    r:89,  color:'#666677'},
-  {lv:19,emoji:'🧙', name:'魔女竹君',    r:92,  color:'#C39BD3'},
-  {lv:20,emoji:'🚀', name:'宇航竹君',    r:95,  color:'#4FC3F7'},
-  {lv:21,emoji:'👨‍🍳',name:'厨师竹君',   r:98,  color:'#FFFFFF'},
-  {lv:22,emoji:'🏃', name:'运动竹君',    r:101, color:'#FF6B35'},
-  {lv:23,emoji:'🕵️', name:'侦探竹君',    r:104, color:'#C8A96E'},
-  {lv:24,emoji:'🦸', name:'超人竹君',    r:107, color:'#5C8AE6'},
-  {lv:25,emoji:'🗿', name:'巨人竹君',    r:110, color:'#B0B0B0'},
-  {lv:26,emoji:'👻', name:'透明竹君',    r:112, color:'#CCCCFF'},
-  {lv:27,emoji:'✨', name:'发光竹君',    r:114, color:'#FFFF99'},
-  {lv:28,emoji:'👾', name:'像素竹君',    r:116, color:'#00FF41'},
-  {lv:29,emoji:'👴', name:'老奶奶竹君',  r:117, color:'#D3D3D3'},
-  {lv:30,emoji:'👶', name:'婴儿竹君',    r:118, color:'#FFD6A5'},
-  {lv:31,emoji:'💧', name:'融化竹君',    r:119, color:'#89CFF0'},
-  // Lv32: r=120 = 360/3 (1/3 of container width)
-  {lv:32,emoji:'👑', name:'宇宙女神',    r:120, color:'#FFD700'},
+  {lv:1,  emoji:'😊', name:'微笑竹君',   r:15,  color:'#FF9AA2'},
+  {lv:2,  emoji:'😲', name:'惊讶竹君',   r:19,  color:'#FFB7B2'},
+  {lv:3,  emoji:'😕', name:'困惑竹君',   r:23,  color:'#FFDAC1'},
+  {lv:4,  emoji:'😂', name:'大笑竹君',   r:27,  color:'#E2F0CB'},
+  {lv:5,  emoji:'😭', name:'痛哭竹君',   r:32,  color:'#B5EAD7'},
+  {lv:6,  emoji:'😡', name:'愤怒竹君',   r:37,  color:'#C7CEEA'},
+  {lv:7,  emoji:'😴', name:'瞌睡竹君',   r:42,  color:'#DCC7F0'},
+  {lv:8,  emoji:'😶', name:'发呆竹君',   r:47,  color:'#F0E6FF'},
+  {lv:9,  emoji:'🤢', name:'中毒竹君',   r:52,  color:'#9BF0A0'},
+  {lv:10, emoji:'🐸', name:'青蛙竹君',   r:57,  color:'#77DD77'},
+  {lv:11, emoji:'😇', name:'天使竹君',   r:62,  color:'#FFFDD0'},
+  {lv:12, emoji:'🐷', name:'肥胖竹君',   r:66,  color:'#FFB3DE'},
+  {lv:13, emoji:'💃', name:'纤细竹君',   r:70,  color:'#FF99CC'},
+  {lv:14, emoji:'💥', name:'爆炸头竹君', r:74,  color:'#FFAA00'},
+  {lv:15, emoji:'💭', name:'冒泡竹君',   r:78,  color:'#AAE4FF'},
+  {lv:16, emoji:'🤩', name:'星眼竹君',   r:82,  color:'#FFD700'},
+  {lv:17, emoji:'👸', name:'公主竹君',   r:86,  color:'#FFB6C1'},
+  {lv:18, emoji:'🥷', name:'忍者竹君',   r:89,  color:'#666677'},
+  {lv:19, emoji:'🧙', name:'魔女竹君',   r:92,  color:'#C39BD3'},
+  {lv:20, emoji:'🚀', name:'宇航竹君',   r:95,  color:'#4FC3F7'},
+  {lv:21, emoji:'👨‍🍳',name:'厨师竹君',  r:98,  color:'#FFFFFF'},
+  {lv:22, emoji:'🏃', name:'运动竹君',   r:101, color:'#FF6B35'},
+  {lv:23, emoji:'🕵️', name:'侦探竹君',  r:104, color:'#C8A96E'},
+  {lv:24, emoji:'🦸', name:'超人竹君',   r:107, color:'#5C8AE6'},
+  {lv:25, emoji:'🗿', name:'巨人竹君',   r:110, color:'#B0B0B0'},
+  {lv:26, emoji:'👻', name:'透明竹君',   r:112, color:'#CCCCFF'},
+  {lv:27, emoji:'✨', name:'发光竹君',   r:114, color:'#FFFF99'},
+  {lv:28, emoji:'👾', name:'像素竹君',   r:116, color:'#00FF41'},
+  {lv:29, emoji:'👴', name:'老奶奶竹君', r:117, color:'#D3D3D3'},
+  {lv:30, emoji:'👶', name:'婴儿竹君',   r:118, color:'#FFD6A5'},
+  {lv:31, emoji:'💧', name:'融化竹君',   r:119, color:'#89CFF0'},
+  {lv:32, emoji:'👑', name:'宇宙女神',   r:120, color:'#FFD700'},
 ];
+const SPAWN_MAX_IDX = 4; // only lv 0–4 (Lv1–5) can spawn from top
 
-const SPAWN_POOL = [0,1,2,3,4]; // only lv index 0–4 (Lv1–5) can spawn
-
-// ═══════════════════════════════════════════════════
-// LEADERBOARD (localStorage)
-// ═══════════════════════════════════════════════════
+// ── LEADERBOARD ─────────────────────────────────────
 function loadLB(){ try{return JSON.parse(localStorage.getItem('wm_lb')||'[]');}catch(e){return[];} }
-function saveLB(lb){ localStorage.setItem('wm_lb', JSON.stringify(lb)); }
-function updateLB(name, score){
-  let lb = loadLB();
-  const idx = lb.findIndex(r=>r.name===name);
-  if(idx>=0){ if(score>lb[idx].score) lb[idx].score=score; }
-  else lb.push({name,score});
-  lb.sort((a,b)=>b.score-a.score);
-  lb = lb.slice(0,20);
-  saveLB(lb);
-  return lb;
+function saveLB(lb){ localStorage.setItem('wm_lb',JSON.stringify(lb)); }
+function updateLB(name,sc){
+  let lb=loadLB();
+  const idx=lb.findIndex(r=>r.name===name);
+  if(idx>=0){if(sc>lb[idx].score)lb[idx].score=sc;}else lb.push({name,score:sc});
+  lb.sort((a,b)=>b.score-a.score);lb=lb.slice(0,20);saveLB(lb);return lb;
 }
 function renderLB(currentName){
-  const lb = loadLB();
-  const container = document.getElementById('lb-list');
-  container.innerHTML='';
-  if(!lb.length){ container.innerHTML='<div style="color:#888;text-align:center;padding:12px">暂无记录</div>'; return; }
+  const lb=loadLB(),c=document.getElementById('lb-list');
+  c.innerHTML='';
+  if(!lb.length){c.innerHTML='<div style="color:#888;text-align:center;padding:12px">暂无记录</div>';return;}
   lb.forEach((r,i)=>{
-    const row = document.createElement('div');
+    const row=document.createElement('div');
     row.className='lb-row'+(r.name===currentName?' me':'');
-    const medal = i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}.`;
-    row.innerHTML=`<span class="lb-rank">${medal}</span><span class="lb-name">${escHtml(r.name)}</span><span class="lb-score">${r.score.toLocaleString()}</span>`;
-    container.appendChild(row);
+    const med=i===0?'🥇':i===1?'🥈':i===2?'🥉':`${i+1}.`;
+    row.innerHTML=`<span class="lb-rank">${med}</span><span class="lb-name">${r.name.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</span><span class="lb-score">${r.score.toLocaleString()}</span>`;
+    c.appendChild(row);
   });
 }
-function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
-// ═══════════════════════════════════════════════════
-// AUDIO
-// ═══════════════════════════════════════════════════
+// ── AUDIO ────────────────────────────────────────────
 let audioCtx=null;
-function getAudio(){ if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)(); return audioCtx; }
-function playMerge(lv){
-  try{
-    const c=getAudio(),o=c.createOscillator(),g=c.createGain();
+function getAC(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();return audioCtx;}
+function playTone(freq,dur,type='sine',vol=0.15){
+  try{const c=getAC(),o=c.createOscillator(),g=c.createGain();
     o.connect(g);g.connect(c.destination);
-    const f=300+lv*35; o.frequency.setValueAtTime(f,c.currentTime);
-    o.frequency.exponentialRampToValueAtTime(f*1.6,c.currentTime+0.12);
-    g.gain.setValueAtTime(0.18,c.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.35);
-    o.type='sine';o.start(c.currentTime);o.stop(c.currentTime+0.35);
+    o.type=type;o.frequency.setValueAtTime(freq,c.currentTime);
+    o.frequency.exponentialRampToValueAtTime(freq*1.5,c.currentTime+dur*.6);
+    g.gain.setValueAtTime(vol,c.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+dur);
+    o.start();o.stop(c.currentTime+dur);
   }catch(e){}
 }
-function playDrop(){
-  try{
-    const c=getAudio(),o=c.createOscillator(),g=c.createGain();
-    o.connect(g);g.connect(c.destination);
-    o.frequency.setValueAtTime(180,c.currentTime);
-    g.gain.setValueAtTime(0.07,c.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+0.1);
-    o.type='triangle';o.start(c.currentTime);o.stop(c.currentTime+0.1);
-  }catch(e){}
-}
+function playDrop(){playTone(180,0.1,'triangle',0.07);}
+function playMerge(lv){playTone(300+lv*30,0.3,'sine',0.17);}
 
-// ═══════════════════════════════════════════════════
-// PARTICLES
-// ═══════════════════════════════════════════════════
+// ── PARTICLES ────────────────────────────────────────
 const pCanvas=document.getElementById('particle-canvas');
 const pCtx=pCanvas.getContext('2d');
 let particles=[];
-function spawnParticles(x,y,color,count=14){
-  for(let i=0;i<count;i++){
-    const a=(Math.PI*2/count)*i+Math.random()*.4;
-    const sp=2.5+Math.random()*3.5;
-    particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,
-      life:1,decay:.022+Math.random()*.018,r:3+Math.random()*4,color});
+function spawnParticles(x,y,color,n=14){
+  for(let i=0;i<n;i++){
+    const a=(Math.PI*2/n)*i+Math.random()*.4,sp=2.5+Math.random()*3.5;
+    particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,decay:.022+Math.random()*.018,r:3+Math.random()*4,color});
   }
 }
 function updateParticles(){
@@ -310,186 +191,178 @@ function updateParticles(){
   particles=particles.filter(p=>p.life>0);
   for(const p of particles){
     p.x+=p.vx;p.y+=p.vy;p.vy+=0.15;p.life-=p.decay;
-    pCtx.globalAlpha=p.life;
-    pCtx.fillStyle=p.color;
+    pCtx.globalAlpha=p.life;pCtx.fillStyle=p.color;
     pCtx.beginPath();pCtx.arc(p.x,p.y,p.r*p.life,0,Math.PI*2);pCtx.fill();
   }
   pCtx.globalAlpha=1;
 }
 
-// ═══════════════════════════════════════════════════
-// IMAGE PRELOAD
-// ═══════════════════════════════════════════════════
-const IMGS = new Array(32).fill(null);
-let imgsLoaded = 0;
+// ── IMAGES ───────────────────────────────────────────
+const IMGS=new Array(32).fill(null);
+let imgsReady=0;
 function preloadImages(cb){
-  LEVELS.forEach((lv,i)=>{
-    const img = new window.Image();
-    img.onload = ()=>{ IMGS[i]=img; imgsLoaded++; if(imgsLoaded===32&&cb)cb(); };
-    img.onerror = ()=>{ imgsLoaded++; if(imgsLoaded===32&&cb)cb(); };
-    img.src = `images/lv${String(i+1).padStart(2,'0')}.png`;
+  LEVELS.forEach((_,i)=>{
+    const img=new Image();
+    img.onload=()=>{IMGS[i]=img;if(++imgsReady===32&&cb)cb();};
+    img.onerror=()=>{if(++imgsReady===32&&cb)cb();};
+    img.src=`images/lv${String(i+1).padStart(2,'0')}.png`;
   });
 }
 
-// ═══════════════════════════════════════════════════
-// DRAW HELPER
-// ═══════════════════════════════════════════════════
-function lighten(c,a){
-  try{
-    if(!c.startsWith('#'))return c;
-    const n=parseInt(c.slice(1),16);
-    return `rgb(${Math.min(255,(n>>16)+a)},${Math.min(255,((n>>8)&0xff)+a)},${Math.min(255,(n&0xff)+a)})`;
-  }catch(e){return c;}
-}
-function darken(c,a){
-  try{
-    if(!c.startsWith('#'))return c;
-    const n=parseInt(c.slice(1),16);
-    return `rgb(${Math.max(0,(n>>16)-a)},${Math.max(0,((n>>8)&0xff)-a)},${Math.max(0,(n&0xff)-a)})`;
-  }catch(e){return c;}
-}
+// ── DRAW ─────────────────────────────────────────────
 function drawItem(ctx,x,y,ld,alpha=1){
   const{r,color,emoji,lv}=ld;
-  const idx=lv-1;
   ctx.save();ctx.globalAlpha=alpha;
-
-  const imgObj=IMGS[idx];
-  if(imgObj){
-    // Clip to circle
+  const img=IMGS[lv-1];
+  if(img){
     ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.clip();
-    // Glow for high levels
-    if(lv>=20){ctx.shadowBlur=20;ctx.shadowColor=color;}
-    ctx.drawImage(imgObj,x-r,y-r,r*2,r*2);
-    ctx.shadowBlur=0;
-    // Ring border
+    ctx.drawImage(img,x-r,y-r,r*2,r*2);
     ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);
     ctx.strokeStyle='rgba(255,255,255,.35)';ctx.lineWidth=2;ctx.stroke();
   } else {
-    // Fallback: colored circle + emoji
-    if(lv>=20){ctx.shadowBlur=18;ctx.shadowColor=color;}
+    const n=parseInt(color.slice(1),16)||0;
+    const lighten=(n,a)=>`rgb(${Math.min(255,(n>>16)+a)},${Math.min(255,((n>>8)&0xff)+a)},${Math.min(255,(n&0xff)+a)})`;
+    const darken=(n,a)=>`rgb(${Math.max(0,(n>>16)-a)},${Math.max(0,((n>>8)&0xff)-a)},${Math.max(0,(n&0xff)-a)})`;
     const g=ctx.createRadialGradient(x-r*.3,y-r*.3,r*.05,x,y,r);
-    g.addColorStop(0,lighten(color,55));g.addColorStop(1,darken(color,25));
+    g.addColorStop(0,lighten(n,55));g.addColorStop(1,darken(n,25));
     ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
     ctx.strokeStyle='rgba(255,255,255,.28)';ctx.lineWidth=1.5;ctx.stroke();
-    ctx.shadowBlur=0;
     const fs=Math.max(10,Math.floor(r*.85));
     ctx.font=`${fs}px serif`;ctx.textAlign='center';ctx.textBaseline='middle';
     ctx.fillText(emoji,x,y);
     if(r>35){
       ctx.font=`bold ${Math.max(7,Math.floor(r*.26))}px sans-serif`;
-      ctx.fillStyle='rgba(255,255,255,.85)';
-      ctx.fillText(`Lv.${lv}`,x,y+r*.62);
+      ctx.fillStyle='rgba(255,255,255,.85)';ctx.fillText(`Lv.${lv}`,x,y+r*.62);
     }
   }
   ctx.restore();
 }
 
-// ═══════════════════════════════════════════════════
-// LEVEL GUIDE
-// ═══════════════════════════════════════════════════
+// ── LEVEL GUIDE ──────────────────────────────────────
 (function(){
   const grid=document.getElementById('level-grid');
   LEVELS.forEach((lv,i)=>{
     const sz=Math.min(28,Math.max(12,lv.r*.2));
     const item=document.createElement('div');item.className='level-item';
     item.innerHTML=`<img src="images/lv${String(i+1).padStart(2,'0')}.png"
-      class="level-dot" style="width:${sz}px;height:${sz}px;border-radius:50%;object-fit:cover;"
-      onerror="this.outerHTML='<div class=level-dot style=width:${sz}px;height:${sz}px;background:${lv.color};font-size:${sz*.65}px>${lv.emoji}</div>'"
+      style="width:${sz}px;height:${sz}px;border-radius:50%;object-fit:cover;"
+      onerror="this.outerHTML='<div class=level-dot style=width:${sz}px;height:${sz}px;background:${lv.color};font-size:${sz*.6}px>${lv.emoji}</div>'"
       title="${lv.name}">
     <div class="level-name">${lv.name.replace('竹君','').replace('宇宙','')}</div>`;
     grid.appendChild(item);
   });
 })();
 
-// ═══════════════════════════════════════════════════
-// GAME STATE
-// ═══════════════════════════════════════════════════
-const GAME_W=360,GAME_H=520,WALL_T=30,DROP_Y=40;
-const {Engine,World,Bodies,Events,Body,Composite}=Matter;
+// ═══════════════════════════════════════════════════════
+// GAME ENGINE
+// Follows the same architecture as moonfloof/suika-game:
+//   - State machine: READY | DROPPING | OVER
+//   - Preview ball is a real Matter body (isStatic+isSensor)
+//     moved by mouse, removed+re-created on drop
+//   - Merge: mark popped, remove both together, spawn new
+// ═══════════════════════════════════════════════════════
+const GAME_W=360,GAME_H=520,WALL_T=30,DROP_Y=44;
+const {Engine,Render,Runner,World,Bodies,Events,Body,Composite}=Matter;
 
-// Game state: 'ready' | 'drop' | 'over'
-let gameState='over';
-let engine,world,animId;
-let score=0,currentIdx=0,nextIdx=0,dropX=GAME_W/2;
+const GameState={READY:0,DROPPING:1,OVER:2};
+
+let gs=GameState.OVER;
+let engine,world,runner;
+let score=0,playerName='玩家';
+let currentLvIdx=0,nextLvIdx=0;
+let previewBody=null;   // the static+sensor ball shown at top before drop
 let overflowTimer=null;
-let playerName='玩家';
 let dropCooldownId=null;
+let animId=null;
 
 const gameCanvas=document.getElementById('gameCanvas');
 const gCtx=gameCanvas.getContext('2d');
 
-function rndSpawn(){ return SPAWN_POOL[Math.floor(Math.random()*SPAWN_POOL.length)]; }
+function rndSpawnIdx(){ return Math.floor(Math.random()*(SPAWN_MAX_IDX+1)); }
 
-// ─── Init ───
-function initGame(){
-  if(engine){Composite.clear(engine.world);Engine.clear(engine);}
-  if(animId) cancelAnimationFrame(animId);
-  if(dropCooldownId){clearTimeout(dropCooldownId);dropCooldownId=null;}
-  particles=[];
-  score=0;gameState='ready';dropX=GAME_W/2;
-  document.getElementById('score').textContent='0';
-
-  currentIdx=rndSpawn();nextIdx=rndSpawn();
-  updatePreview();
-
-  engine=Engine.create({gravity:{y:2}});
-  world=engine.world;
-  const wo={isStatic:true,friction:.5,restitution:.25,label:'wall'};
-  Composite.add(world,[
-    Bodies.rectangle(GAME_W/2,GAME_H+WALL_T/2,GAME_W,WALL_T,wo),
-    Bodies.rectangle(-WALL_T/2,GAME_H/2,WALL_T,GAME_H*2,wo),
-    Bodies.rectangle(GAME_W+WALL_T/2,GAME_H/2,WALL_T,GAME_H*2,wo),
-  ]);
-  Events.on(engine,'collisionStart',handleCollision);
-  loop();
-}
-
-// ─── Spawn ───
-function spawnBody(lvIdx,x,y){
+// ── Create a physics body for a level ────────────────
+function makeBody(lvIdx,x,y,opts={}){
   const lv=LEVELS[lvIdx];
-  const b=Bodies.circle(x,y,lv.r,{
-    restitution:.28,friction:.55,frictionAir:.006,density:.002,
-    label:'item'
-  });
+  const b=Bodies.circle(x,y,lv.r,Object.assign({
+    restitution:0.3,friction:0.5,frictionAir:0.005,
+    label:'item',
+    collisionFilter:{category:0x0001,mask:0xFFFF}
+  },opts));
   b._lvIdx=lvIdx;
   b.popped=false;
-  Composite.add(world,b);
   return b;
 }
 
-// ─── Drop ───
-function drop(x){
-  if(gameState!=='ready')return;
-  gameState='drop';
+// ── Preview ball (static+sensor, moves with cursor) ──
+function createPreview(x){
+  if(previewBody){Composite.remove(world,previewBody);previewBody=null;}
+  previewBody=makeBody(currentLvIdx,x,DROP_Y,{
+    isStatic:true,
+    isSensor:true,
+    collisionFilter:{category:0x0002,mask:0x0000}  // no collisions at all
+  });
+  Composite.add(world,previewBody);
+}
+function movePreview(x){
+  if(!previewBody)return;
+  const lv=LEVELS[currentLvIdx];
+  const cx=Math.max(lv.r+2,Math.min(GAME_W-lv.r-2,x));
+  Body.setPosition(previewBody,{x:cx,y:DROP_Y});
+}
+
+// ── Drop ─────────────────────────────────────────────
+function dropBall(x){
+  if(gs!==GameState.READY)return;
+  gs=GameState.DROPPING;
   playDrop();
-  const li=currentIdx;
-  spawnBody(li,x,DROP_Y);
-  currentIdx=nextIdx;nextIdx=rndSpawn();
-  updatePreview();
+
+  // Remove preview, spawn real ball at same x
+  const lv=LEVELS[currentLvIdx];
+  const cx=Math.max(lv.r+2,Math.min(GAME_W-lv.r-2,x));
+  if(previewBody){Composite.remove(world,previewBody);previewBody=null;}
+  const b=makeBody(currentLvIdx,cx,DROP_Y);
+  Composite.add(world,b);
+
+  // Advance to next
+  currentLvIdx=nextLvIdx;
+  nextLvIdx=rndSpawnIdx();
+  updatePreview_ui();
+
+  // After cooldown, spawn new preview and go READY
+  if(dropCooldownId)clearTimeout(dropCooldownId);
   dropCooldownId=setTimeout(()=>{
     dropCooldownId=null;
-    if(gameState==='drop') gameState='ready';
+    if(gs===GameState.DROPPING){
+      createPreview(GAME_W/2);
+      gs=GameState.READY;
+    }
   },500);
 }
 
-// ─── Collision / Merge ── (直接参考 moonfloof/suika-game 写法)
+// ── Collision / Merge ─────────────────────────────────
 function handleCollision(e){
   for(const pair of e.pairs){
     const a=pair.bodyA,b=pair.bodyB;
-    if(a.isStatic||b.isStatic)continue;
-    if(a._lvIdx===undefined||b._lvIdx===undefined)continue;
+    if(a.isStatic||b.isStatic||a.isSensor||b.isSensor)continue;
     if(a.popped||b.popped)continue;
+    if(a._lvIdx===undefined||b._lvIdx===undefined)continue;
     if(a._lvIdx!==b._lvIdx)continue;
     const li=a._lvIdx;
     if(li>=LEVELS.length-1)continue;
-    // Mark as popped first, then remove + spawn
-    a.popped=true; b.popped=true;
+
+    a.popped=true;b.popped=true;
     const mx=(a.position.x+b.position.x)/2;
     const my=(a.position.y+b.position.y)/2;
-    Composite.remove(world,[a,b]);  // pass array: remove both in one call like reference impl
-    const nb=spawnBody(li+1,mx,my);
+
+    // Remove both as array (atomic)
+    Composite.remove(world,[a,b]);
+
+    // Spawn merged ball
+    const nb=makeBody(li+1,mx,my);
+    Composite.add(world,nb);
     Body.setVelocity(nb,{x:0,y:-2});
-    nb._flash=10;
+    nb._flash=12;
+
     score+=Math.pow(li+2,2)*10;
     document.getElementById('score').textContent=score;
     playMerge(li+2);
@@ -497,77 +370,69 @@ function handleCollision(e){
   }
 }
 
-// ─── Game Over ───
+// ── Game Over ─────────────────────────────────────────
+const GAMEOVER_LINE=DROP_Y+10;
 function checkGameOver(){
   const bodies=Composite.allBodies(world);
   for(const b of bodies){
-    if(b.isStatic||b._lvIdx===undefined||b.popped)continue;
-    if(b.position.y-LEVELS[b._lvIdx].r<8){
-      if(!overflowTimer) overflowTimer=setTimeout(()=>{
-        if(gameState!=='over') triggerGameOver();
-      },2500);
+    if(b.isStatic||b.isSensor||b._lvIdx===undefined||b.popped)continue;
+    if(b.position.y-LEVELS[b._lvIdx].r<GAMEOVER_LINE){
+      if(!overflowTimer)overflowTimer=setTimeout(()=>{
+        if(gs!==GameState.OVER)triggerGameOver();
+      },2000);
       return;
     }
   }
   if(overflowTimer){clearTimeout(overflowTimer);overflowTimer=null;}
 }
 function triggerGameOver(){
-  gameState='over';
+  gs=GameState.OVER;
   if(dropCooldownId){clearTimeout(dropCooldownId);dropCooldownId=null;}
+  if(previewBody){Composite.remove(world,previewBody);previewBody=null;}
   const lb=updateLB(playerName,score);
   const rank=lb.findIndex(r=>r.name===playerName)+1;
   document.getElementById('final-score').textContent=score.toLocaleString();
-  const myBest=lb.find(r=>r.name===playerName)?.score||score;
-  const msg=rank===1?'🥇 排行榜第一！太强了！':
-            score===myBest?`🎉 新纪录！当前排名第 ${rank} 名`:
-            `当前排名第 ${rank} 名，继续加油！💪`;
-  document.getElementById('gameover-msg').textContent=msg;
+  const best=lb.find(r=>r.name===playerName)?.score||score;
+  document.getElementById('gameover-msg').textContent=
+    rank===1?'🥇 排行榜第一！太强了！':
+    score===best?`🎉 新纪录！当前排名第${rank}名`:
+    `当前排名第${rank}名，继续加油！💪`;
   document.getElementById('gameover-screen').classList.add('active');
 }
 
-// ─── Preview ───
-function updatePreview(){
-  const cur=LEVELS[currentIdx],nxt=LEVELS[nextIdx];
+// ── Preview UI ────────────────────────────────────────
+function updatePreview_ui(){
+  const cur=LEVELS[currentLvIdx],nxt=LEVELS[nextLvIdx];
   document.getElementById('current-name').textContent=cur.emoji+' '+cur.name;
   document.getElementById('next-name').textContent=nxt.emoji+' '+nxt.name;
   const nc=document.getElementById('next-canvas');
   const nx=nc.getContext('2d');
   nx.clearRect(0,0,44,44);
-  nx.fillStyle='rgba(0,0,0,.3)';
-  nx.beginPath();nx.arc(22,22,21,0,Math.PI*2);nx.fill();
-  // Scale down if radius > 21
-  const scale=Math.min(1,18/nxt.r);
-  nx.save();nx.translate(22,22);nx.scale(scale,scale);nx.translate(-22,-22);
-  drawItem(nx,22,22,nxt);
-  nx.restore();
+  nx.fillStyle='rgba(0,0,0,.3)';nx.beginPath();nx.arc(22,22,21,0,Math.PI*2);nx.fill();
+  const sc2=Math.min(1,18/nxt.r);
+  nx.save();nx.translate(22,22);nx.scale(sc2,sc2);nx.translate(-22,-22);
+  drawItem(nx,22,22,nxt);nx.restore();
 }
 
-// ─── Render loop ───
-function loop(){
+// ── Render loop ───────────────────────────────────────
+function renderLoop(){
   Engine.update(engine,1000/60);
-  if(gameState!=='over')checkGameOver();
+  if(gs!==GameState.OVER)checkGameOver();
 
-  // Background
   gCtx.clearRect(0,0,GAME_W,GAME_H);
   const bg=gCtx.createLinearGradient(0,0,0,GAME_H);
   bg.addColorStop(0,'#0d0020');bg.addColorStop(1,'#1a0030');
   gCtx.fillStyle=bg;gCtx.fillRect(0,0,GAME_W,GAME_H);
 
-  // Danger zone
-  gCtx.strokeStyle='rgba(255,60,60,.2)';gCtx.lineWidth=1;
-  gCtx.setLineDash([6,6]);
-  gCtx.beginPath();
-  gCtx.moveTo(0,DROP_Y+LEVELS[currentIdx].r+8);
-  gCtx.lineTo(GAME_W,DROP_Y+LEVELS[currentIdx].r+8);
+  // Danger line
+  gCtx.strokeStyle='rgba(255,60,60,.25)';gCtx.lineWidth=1;gCtx.setLineDash([6,6]);
+  gCtx.beginPath();gCtx.moveTo(0,GAMEOVER_LINE+LEVELS[currentLvIdx].r);gCtx.lineTo(GAME_W,GAMEOVER_LINE+LEVELS[currentLvIdx].r);
   gCtx.stroke();gCtx.setLineDash([]);
 
-  // Drop ghost
-  if(gameState==='ready') drawItem(gCtx,dropX,DROP_Y,LEVELS[currentIdx],.45);
-
-  // Draw bodies
+  // Draw all non-static, non-sensor bodies
   const bodies=Composite.allBodies(world);
   for(const b of bodies){
-    if(b.isStatic||b._lvIdx===undefined||b.popped)continue;
+    if(b.isStatic||b.isSensor||b._lvIdx===undefined||b.popped)continue;
     const ld=LEVELS[b._lvIdx];
     gCtx.save();
     gCtx.translate(b.position.x,b.position.y);
@@ -575,56 +440,102 @@ function loop(){
     gCtx.translate(-b.position.x,-b.position.y);
     drawItem(gCtx,b.position.x,b.position.y,ld);
     if(b._flash>0){
-      gCtx.globalAlpha=b._flash/10*.55;
-      gCtx.fillStyle='#ffffff';
-      gCtx.beginPath();gCtx.arc(b.position.x,b.position.y,ld.r,0,Math.PI*2);gCtx.fill();
+      gCtx.globalAlpha=b._flash/12*.5;
+      gCtx.fillStyle='#fff';gCtx.beginPath();gCtx.arc(b.position.x,b.position.y,ld.r,0,Math.PI*2);gCtx.fill();
       b._flash--;
     }
     gCtx.restore();
   }
+  // Draw preview ball (semi-transparent)
+  if(gs===GameState.READY&&previewBody){
+    drawItem(gCtx,previewBody.position.x,previewBody.position.y,LEVELS[currentLvIdx],0.5);
+  }
 
-  // Wall border glow
-  gCtx.strokeStyle='rgba(180,80,255,.25)';gCtx.lineWidth=3;
+  // Wall glow
+  gCtx.strokeStyle='rgba(180,80,255,.2)';gCtx.lineWidth=3;
   gCtx.strokeRect(1.5,1.5,GAME_W-3,GAME_H-3);
 
   updateParticles();
-  if(gameState!=='over'||particles.length>0) animId=requestAnimationFrame(loop);
+  if(gs!==GameState.OVER||particles.length>0)animId=requestAnimationFrame(renderLoop);
 }
 
-// ═══════════════════════════════════════════════════
-// INPUT
-// ═══════════════════════════════════════════════════
-function clampX(raw){
-  const lv=LEVELS[currentIdx];
-  return Math.max(lv.r+4,Math.min(GAME_W-lv.r-4,raw));
+// ── Init ─────────────────────────────────────────────
+function initGame(){
+  if(animId){cancelAnimationFrame(animId);animId=null;}
+  if(dropCooldownId){clearTimeout(dropCooldownId);dropCooldownId=null;}
+  if(overflowTimer){clearTimeout(overflowTimer);overflowTimer=null;}
+  if(engine){
+    Events.off(engine);
+    Composite.clear(engine.world,false);
+    Engine.clear(engine);
+  }
+  particles=[];previewBody=null;
+  score=0;gs=GameState.READY;
+  document.getElementById('score').textContent='0';
+
+  currentLvIdx=rndSpawnIdx();nextLvIdx=rndSpawnIdx();
+  updatePreview_ui();
+
+  engine=Engine.create({gravity:{y:1.5}});
+  world=engine.world;
+
+  const wallOpts={isStatic:true,friction:.6,restitution:.2,label:'wall'};
+  Composite.add(world,[
+    Bodies.rectangle(GAME_W/2, GAME_H+WALL_T/2, GAME_W+WALL_T*2, WALL_T, wallOpts),
+    Bodies.rectangle(-WALL_T/2, GAME_H/2, WALL_T, GAME_H*3, wallOpts),
+    Bodies.rectangle(GAME_W+WALL_T/2, GAME_H/2, WALL_T, GAME_H*3, wallOpts),
+  ]);
+
+  Events.on(engine,'collisionStart',handleCollision);
+
+  // Create first preview ball
+  createPreview(GAME_W/2);
+  updateGuide(GAME_W/2);
+
+  renderLoop();
 }
-function clientToGame(clientX){
+
+// ── Input ─────────────────────────────────────────────
+function getGameX(clientX){
   const rect=gameCanvas.getBoundingClientRect();
-  return clampX((clientX-rect.left)*(GAME_W/rect.width));
+  const raw=(clientX-rect.left)*(GAME_W/rect.width);
+  const lv=LEVELS[currentLvIdx];
+  return Math.max(lv.r+2,Math.min(GAME_W-lv.r-2,raw));
 }
-gameCanvas.addEventListener('mousemove',e=>{
-  if(gameState!=='ready')return;
-  dropX=clientToGame(e.clientX);
+function updateGuide(x){
   const l=document.getElementById('guide-line');
-  l.setAttribute('x1',dropX);l.setAttribute('x2',dropX);
+  l.setAttribute('x1',x);l.setAttribute('x2',x);
+}
+
+gameCanvas.addEventListener('mousemove',e=>{
+  if(gs!==GameState.READY)return;
+  const x=getGameX(e.clientX);
+  movePreview(x);updateGuide(x);
 });
 gameCanvas.addEventListener('click',e=>{
-  if(gameState==='over')return;
-  drop(clientToGame(e.clientX));
+  if(gs!==GameState.READY)return;
+  dropBall(getGameX(e.clientX));
 });
-gameCanvas.addEventListener('touchstart',e=>{e.preventDefault();dropX=clientToGame(e.touches[0].clientX);},{passive:false});
-gameCanvas.addEventListener('touchmove',e=>{
-  e.preventDefault();if(gameState!=='ready')return;
-  dropX=clientToGame(e.touches[0].clientX);
-  const l=document.getElementById('guide-line');l.setAttribute('x1',dropX);l.setAttribute('x2',dropX);
+gameCanvas.addEventListener('touchstart',e=>{
+  e.preventDefault();
+  if(gs!==GameState.READY)return;
+  const x=getGameX(e.touches[0].clientX);
+  movePreview(x);updateGuide(x);
 },{passive:false});
-gameCanvas.addEventListener('touchend',e=>{e.preventDefault();if(gameState!=='over')drop(dropX);},{passive:false});
+gameCanvas.addEventListener('touchmove',e=>{
+  e.preventDefault();
+  if(gs!==GameState.READY)return;
+  const x=getGameX(e.touches[0].clientX);
+  movePreview(x);updateGuide(x);
+},{passive:false});
+gameCanvas.addEventListener('touchend',e=>{
+  e.preventDefault();
+  if(gs!==GameState.READY)return;
+  dropBall(getGameX(e.changedTouches[0].clientX));
+},{passive:false});
 
-// ═══════════════════════════════════════════════════
-// BUTTONS
-// ═══════════════════════════════════════════════════
-// Preload images on page load
-preloadImages(()=>{ console.log('🖼️ All images loaded!'); });
+// ── Buttons ───────────────────────────────────────────
+preloadImages(()=>console.log('images ready'));
 
 document.getElementById('start-btn').addEventListener('click',()=>{
   const raw=document.getElementById('name-input').value.trim();
@@ -633,16 +544,14 @@ document.getElementById('start-btn').addEventListener('click',()=>{
   initGame();
 });
 document.getElementById('name-input').addEventListener('keydown',e=>{
-  if(e.key==='Enter') document.getElementById('start-btn').click();
+  if(e.key==='Enter')document.getElementById('start-btn').click();
 });
 document.getElementById('restart-btn').addEventListener('click',()=>{
   document.getElementById('gameover-screen').classList.remove('active');
-  if(overflowTimer){clearTimeout(overflowTimer);overflowTimer=null;}
   initGame();
 });
 document.getElementById('leaderboard-btn').addEventListener('click',()=>{
-  renderLB(playerName);
-  document.getElementById('lb-overlay').classList.add('active');
+  renderLB(playerName);document.getElementById('lb-overlay').classList.add('active');
 });
 document.getElementById('lb-close').addEventListener('click',()=>{
   document.getElementById('lb-overlay').classList.remove('active');
