@@ -486,8 +486,7 @@ function handleCollision(e){
     a.popped=true; b.popped=true;
     const mx=(a.position.x+b.position.x)/2;
     const my=(a.position.y+b.position.y)/2;
-    Composite.remove(world,a);
-    Composite.remove(world,b);
+    Composite.remove(world,[a,b]);  // pass array: remove both in one call like reference impl
     const nb=spawnBody(li+1,mx,my);
     Body.setVelocity(nb,{x:0,y:-2});
     nb._flash=10;
